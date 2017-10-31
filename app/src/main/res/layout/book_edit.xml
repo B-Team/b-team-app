@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="10dp">
+
+    <RelativeLayout android:id="@+id/textBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView android:id="@+id/textView_title" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="@string/key_title"
+            android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
+            android:layout_marginRight="@dimen/key_value_margin"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText android:id="@+id/editText_title" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text=""
+            android:layout_toRightOf="@+id/textView_title" android:layout_alignTop="@+id/textView_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/textView_author" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="@string/key_author"
+            android:layout_below="@+id/editText_title" android:layout_alignParentLeft="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText android:id="@+id/editText_author" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text=""
+            android:layout_toRightOf="@+id/textView_author" android:layout_below="@+id/editText_title"
+            android:layout_alignLeft="@id/editText_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/textView_isbn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="@string/key_isbn"
+            android:layout_below="@+id/editText_author" android:layout_alignParentLeft="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+        <EditText android:id="@+id/editText_isbn" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text=""
+            android:layout_toRightOf="@+id/textView_isbn" android:layout_below="@+id/editText_author"
+            android:layout_alignLeft="@id/editText_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/textView_publisher" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="@string/key_publisher"
+            android:layout_below="@+id/editText_isbn" android:layout_alignParentLeft="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+        <EditText android:id="@+id/editText_publisher" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text=""
+            android:layout_toRightOf="@+id/textView_publisher" android:layout_below="@+id/editText_isbn"
+            android:layout_alignLeft="@id/editText_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/textView_nPages" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="@string/key_nPages"
+            android:layout_below="@+id/editText_publisher" android:layout_alignParentLeft="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+        <EditText android:id="@+id/editText_nPages" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text=""
+            android:layout_toRightOf="@+id/textView_nPages" android:layout_below="@+id/editText_publisher"
+            android:layout_alignLeft="@id/editText_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/textView_nVolume" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="@string/key_nVolume"
+            android:layout_below="@+id/editText_nPages" android:layout_alignParentLeft="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+        <EditText android:id="@+id/editText_nVolume" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text=""
+            android:layout_toRightOf="@+id/textView_nVolume" android:layout_below="@+id/editText_nPages"
+            android:layout_alignLeft="@id/editText_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/textView_genre" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="@string/key_genre"
+            android:layout_below="@+id/editText_nVolume" android:layout_alignParentLeft="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+        <EditText android:id="@+id/editText_genre" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text=""
+            android:layout_toRightOf="@+id/textView_genre" android:layout_below="@+id/editText_nVolume"
+            android:layout_alignLeft="@id/editText_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/textView_ownership" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="@string/key_ownership"
+            android:layout_below="@+id/editText_genre" android:layout_alignParentLeft="true"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+        <EditText android:id="@+id/editText_ownership" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text=""
+            android:layout_toRightOf="@+id/textView_ownership" android:layout_below="@+id/editText_genre"
+            android:layout_alignLeft="@id/editText_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </RelativeLayout>
+
+    <Button android:id="@+id/save" style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_alignParentRight="true" android:layout_below="@id/textBox"
+        android:layout_marginRight="21dp" android:layout_marginTop="13dp"
+        android:text="@string/button_save" />
+
+    <Button android:id="@+id/delete" style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/save" android:layout_alignBottom="@+id/save"
+        android:layout_toLeftOf="@+id/save" android:text="@string/button_delete" />
+
+    <Button android:id="@+id/cancel" style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/save" android:layout_alignBottom="@+id/save"
+        android:layout_alignParentLeft="true" android:text="@string/button_cancel" />
+
+</RelativeLayout>
