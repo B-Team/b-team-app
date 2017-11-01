@@ -34,10 +34,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         displayListView();
 
-        /*contextual action bar allows for multiple selections by touching and holding
-         *currently bugged, doesn't refresh list on delete
+        /*Contextual action bar allows for multiple selections by touching and holding.
+        Not bugged anymore, but still very poorly integrated. The tapping of books should not
+        open the BookEditActivity but instead fold out all information about the book.
+        -Moritz
          */
-        //initializeContextualActionBar();
+        initializeContextualActionBar();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +60,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onResume() {
         super.onResume();
+        restartLoader();
+    }
+
+    private void restartLoader() {
         getLoaderManager().restartLoader(0, null, this);
     }
 
@@ -240,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                                 getContentResolver().delete(uri, null, null);
                             }
                         }
+                        restartLoader();
                         mode.finish();
                         break;
 
