@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class BookEdit extends Activity implements OnClickListener{
+public class BookEditActivity extends Activity implements OnClickListener {
 
     private Button save, delete, cancel;
     private String mode;

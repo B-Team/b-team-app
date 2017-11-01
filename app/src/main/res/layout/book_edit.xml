@@ -13,8 +13,8 @@
             android:layout_marginRight="@dimen/key_value_margin"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText android:id="@+id/editText_title" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text=""
+        <EditText android:id="@+id/editText_title" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:inputType="text"
             android:layout_toRightOf="@+id/textView_title" android:layout_alignTop="@+id/textView_title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -23,11 +23,21 @@
             android:layout_below="@+id/editText_title" android:layout_alignParentLeft="true"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText android:id="@+id/editText_author" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text=""
+        <EditText android:id="@+id/editText_author" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:inputType="text"
             android:layout_toRightOf="@+id/textView_author" android:layout_below="@+id/editText_title"
             android:layout_alignLeft="@id/editText_title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <!--Ideally the author edit text should show all authors previously used as a autocomplete list.
+            For that to work we need AutoCompleteTextViews instead of EditText. Also the BookEditActivity class needs
+            to implement functions to fill that list.
+            I haven't worked out yet how to use the BookProvider to get the required data, so we keep the EditTexts for now.
+            -Moritz
+        <AutoCompleteTextView android:id="@+id/editText_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        -->
 
         <TextView android:id="@+id/textView_isbn" android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:text="@string/key_isbn"
@@ -35,8 +45,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
-        <EditText android:id="@+id/editText_isbn" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text=""
+        <EditText android:id="@+id/editText_isbn" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:inputType="text"
             android:layout_toRightOf="@+id/textView_isbn" android:layout_below="@+id/editText_author"
             android:layout_alignLeft="@id/editText_title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -47,8 +57,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
-        <EditText android:id="@+id/editText_publisher" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text=""
+        <EditText android:id="@+id/editText_publisher" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:inputType="text"
             android:layout_toRightOf="@+id/textView_publisher" android:layout_below="@+id/editText_isbn"
             android:layout_alignLeft="@id/editText_title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -59,8 +69,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
-        <EditText android:id="@+id/editText_nPages" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text=""
+        <EditText android:id="@+id/editText_nPages" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:inputType="number"
             android:layout_toRightOf="@+id/textView_nPages" android:layout_below="@+id/editText_publisher"
             android:layout_alignLeft="@id/editText_title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -71,8 +81,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
-        <EditText android:id="@+id/editText_nVolume" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text=""
+        <EditText android:id="@+id/editText_nVolume" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:inputType="number"
             android:layout_toRightOf="@+id/textView_nVolume" android:layout_below="@+id/editText_nPages"
             android:layout_alignLeft="@id/editText_title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -83,8 +93,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
-        <EditText android:id="@+id/editText_genre" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text=""
+        <EditText android:id="@+id/editText_genre" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:inputType="text"
             android:layout_toRightOf="@+id/textView_genre" android:layout_below="@+id/editText_nVolume"
             android:layout_alignLeft="@id/editText_title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -95,7 +105,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
-        <EditText android:id="@+id/editText_ownership" android:layout_width="wrap_content"
+        <EditText android:id="@+id/editText_ownership" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:text=""
             android:layout_toRightOf="@+id/textView_ownership" android:layout_below="@+id/editText_genre"
             android:layout_alignLeft="@id/editText_title"

@@ -43,13 +43,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent bookEdit = new Intent(getBaseContext(), BookEdit.class);
+                Intent bookEdit = new Intent(getBaseContext(), BookEditActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("mode", "add");
                 bookEdit.putExtras(bundle);
                 startActivity(bookEdit);
             }
         });
+
+        //Setting up autocomplete for authors already used once
+        String[] existingAuthors;
     }
 
     @Override
@@ -114,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                 // starts a new Intent to update/delete a Country
                 // pass in row Id to create the Content URI for a single row
-                Intent bookEdit = new Intent(getBaseContext(), BookEdit.class);
+                Intent bookEdit = new Intent(getBaseContext(), BookEditActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("mode", "update");
                 bundle.putString("rowId", rowId);
@@ -250,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                                 // starts a new Intent to update the book
                                 // pass in row Id to create the Content URI for a single row
-                                Intent bookEdit = new Intent(getBaseContext(), BookEdit.class);
+                                Intent bookEdit = new Intent(getBaseContext(), BookEditActivity.class);
                                 Bundle bundle = new Bundle();
                                 bundle.putString("mode", "update");
                                 bundle.putString("rowId", rowId);
