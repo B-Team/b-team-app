@@ -1,22 +1,32 @@
 package com.b_team.b_team_app;
 
 import android.app.Activity;
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SimpleCursorAdapter;
+import android.widget.SimpleCursorAdapter.CursorToStringConverter;
 import android.widget.Toast;
 
-public class BookEditActivity extends Activity implements OnClickListener {
+public class BookEditActivity extends Activity implements OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private Button save, delete, cancel;
     private String mode;
     private EditText title, author, isbn, publisher, nPages, nVolume, genre, ownership;
     private String id;
+    private AutoCompleteTextView authorView;
+    private SimpleCursorAdapter dataAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,13 +61,88 @@ public class BookEditActivity extends Activity implements OnClickListener {
         if(mode.trim().equalsIgnoreCase("add")){
             delete.setEnabled(false);
         }
-        // get the rowId for the specific country
+        // get the rowId for the specific book
         else{
             Bundle bundle = this.getIntent().getExtras();
             id = bundle.getString("rowId");
             loadBookInfo();
         }
 
+        // Create a SimpleCursorAdapter for the author field.
+        dataAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_dropdown_item_1line,
+                null, new String[]{BooksTable.KEY_AUTHOR}, new int[]{android.R.id.text1}, 0);
+        authorView = (AutoCompleteTextView) findViewById(R.id.editText_author);
+        authorView.setAdapter(dataAdapter);
+
+        getLoaderManager().initLoader(0, null, this);
+
+        // Set an OnItemClickListener, to update the field when
+        // a choice is made in the AutoCompleteTextView.
+        authorView.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> listView, View view,
+                                    int position, long id) {
+
+                // Get the cursor, positioned to the corresponding row in the result set
+                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+
+                // Get the author from this row in the database.
+                String selAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR));
+
+                // Update the TextView
+                authorView.setText(selAuthor);
+            }
+        });
+
+        // Set the CursorToStringConverter, to provide the labels for the
+        // choices to be displayed in the AutoCompleteTextView.
+        dataAdapter.setCursorToStringConverter(new CursorToStringConverter() {
+            public String convertToString(android.database.Cursor cursor) {
+                // Get the label for this row out of the BooksTable.KEY_AUTHOR column
+                final int columnIndex = cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR);
+                final String str = cursor.getString(columnIndex);
+                return str;
+            }
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        restartLoader();
+    }
+
+    private void restartLoader() {
+        getLoaderManager().restartLoader(0, null, this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle)
+    {
+        String[] projection = {
+                BooksTable.KEY_ID,
+                BooksTable.KEY_AUTHOR,
+        };
+
+        CursorLoader cursorLoader = new CursorLoader(this,
+                BookProvider.AUTHORS_URI, projection, null, null, null);
+
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Swap the new cursor in.  (The framework will take care of closing the
+        // old cursor once we return.)
+        dataAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // This is called when the last Cursor provided to onLoadFinished()
+        // above is about to be closed.  We need to make sure we are no
+        // longer using it.
+        dataAdapter.swapCursor(null);
     }
 
     public void onClick(View v) {

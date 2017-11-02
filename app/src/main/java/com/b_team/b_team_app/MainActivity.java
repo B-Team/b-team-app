@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivity(bookEdit);
             }
         });
-
-        //Setting up autocomplete for authors already used once
-        String[] existingAuthors;
     }
 
     @Override
@@ -112,12 +109,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 // Get the cursor, positioned to the corresponding row in the result set
                 Cursor cursor = (Cursor) listView.getItemAtPosition(position);
 
-                /*// display the selected country
-                String countryCode =
-                        cursor.getString(cursor.getColumnIndexOrThrow(CountriesDb.KEY_CODE));
-                Toast.makeText(getApplicationContext(),
-                        countryCode, Toast.LENGTH_SHORT).show();
-                */
                 String rowId =
                         cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_ID));
 

@@ -15,6 +15,7 @@ public class BookProvider extends ContentProvider{
 
     private static final int ALL_BOOKS = 1;
     private static final int SINGLE_BOOK = 2;
+    private static final int ALL_AUTHORS = 3;
     //Add "id" of aliases here
 
     private static final String AUTHORITY = "com.b_team.bookprovider";
@@ -22,11 +23,15 @@ public class BookProvider extends ContentProvider{
     public static final Uri CONTENT_URI =
             Uri.parse("content://" + AUTHORITY + "/books");
 
+    public static final Uri AUTHORS_URI =
+            Uri.parse("content://" + AUTHORITY + "/authors");
+
     private static final UriMatcher uriMatcher;
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(AUTHORITY, "books", ALL_BOOKS);
         uriMatcher.addURI(AUTHORITY, "books/#", SINGLE_BOOK);
+        uriMatcher.addURI(AUTHORITY, "authors", ALL_AUTHORS);
         //Add URI aliases here
     }
 
@@ -73,6 +78,7 @@ public class BookProvider extends ContentProvider{
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(BooksTable.TABLE_NAME);
+        String groupBy = null;
 
         switch (uriMatcher.match(uri)) {
             case ALL_BOOKS:
@@ -82,13 +88,16 @@ public class BookProvider extends ContentProvider{
                 String id = uri.getPathSegments().get(1);
                 queryBuilder.appendWhere(BooksTable.KEY_ID + "=" + id);
                 break;
+            case ALL_AUTHORS:
+                groupBy = BooksTable.KEY_AUTHOR;
+                break;
             //Additional alias code here
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
 
         Cursor cursor = queryBuilder.query(db, projection, selection,
-                selectionArgs, null, null, sortOrder);
+                selectionArgs, groupBy, null, sortOrder);
         return cursor;
 
     }
