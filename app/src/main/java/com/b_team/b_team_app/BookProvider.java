@@ -16,12 +16,19 @@ public class BookProvider extends ContentProvider{
     private static final int ALL_BOOKS = 1;
     private static final int SINGLE_BOOK = 2;
     private static final int ALL_AUTHORS = 3;
+    private static final int SEARCH_BOOKS_GROUP = 4;
+    private static final int SEARCH_BOOKS_GROUP_FILTER = 5;
+    private static final int SEARCH_BOOKS_FILTER = 6;
+    private static final int SEARCH_BOOKS_FILTER_EMPTY= 7;
     //Add "id" of aliases here
 
     private static final String AUTHORITY = "com.b_team.bookprovider";
 
     public static final Uri CONTENT_URI =
             Uri.parse("content://" + AUTHORITY + "/books");
+
+    public static final Uri URI_SEARCH_BOOKS_FILTER =
+            Uri.parse("content://" + AUTHORITY + "/booksearch/");
 
     public static final Uri AUTHORS_URI =
             Uri.parse("content://" + AUTHORITY + "/authors");
@@ -32,6 +39,16 @@ public class BookProvider extends ContentProvider{
         uriMatcher.addURI(AUTHORITY, "books", ALL_BOOKS);
         uriMatcher.addURI(AUTHORITY, "books/#", SINGLE_BOOK);
         uriMatcher.addURI(AUTHORITY, "authors", ALL_AUTHORS);
+        //Search for all Books grouped by field given in *
+        //* must be the correct KEY from BooksTable
+        uriMatcher.addURI(AUTHORITY, "booksearchgroup/*", SEARCH_BOOKS_GROUP);
+        //Like booksearch but with an additional filter for the value of the field
+        uriMatcher.addURI(AUTHORITY, "booksearchgroup/*/*", SEARCH_BOOKS_GROUP_FILTER);
+        //Search for all Books that match the given string */* in the given field *
+        //e.g booksearch/BooksTable.KEY_AUTHOR/searchtext
+        uriMatcher.addURI(AUTHORITY, "booksearch/*/*", SEARCH_BOOKS_FILTER);
+        //same as above but for an empty search text
+        uriMatcher.addURI(AUTHORITY, "booksearch/*", SEARCH_BOOKS_FILTER_EMPTY);
         //Add URI aliases here
     }
 
@@ -49,6 +66,8 @@ public class BookProvider extends ContentProvider{
                 return "vnd.android.cursor.dir/vnd.com.b_team.contentprovider.books";
             case SINGLE_BOOK:
                 return "vnd.android.cursor.item/vnd.com.b_team.contentprovider.books";
+            case SEARCH_BOOKS_FILTER:
+                return "vnd.android.cursor.dir/vnd.com.b_team.contentprovider.books";
             //Additional alias code here
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -79,6 +98,8 @@ public class BookProvider extends ContentProvider{
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(BooksTable.TABLE_NAME);
         String groupBy = null;
+        //selection is used if matched uri doesnt provide a different one
+        String WHERE = selection;
 
         switch (uriMatcher.match(uri)) {
             case ALL_BOOKS:
@@ -91,12 +112,24 @@ public class BookProvider extends ContentProvider{
             case ALL_AUTHORS:
                 groupBy = BooksTable.KEY_AUTHOR;
                 break;
+            case SEARCH_BOOKS_GROUP:
+                groupBy = uri.getPathSegments().get(1);
+                break;
+            case SEARCH_BOOKS_GROUP_FILTER:
+                WHERE = uri.getPathSegments().get(1) + " LIKE '%" + uri.getPathSegments().get(2) + "%'";
+                groupBy = uri.getPathSegments().get(1);
+                break;
+            case SEARCH_BOOKS_FILTER:
+                WHERE = uri.getPathSegments().get(1) + " LIKE '%" + uri.getPathSegments().get(2) + "%'";
+                break;
+            case SEARCH_BOOKS_FILTER_EMPTY:
+                return null;
             //Additional alias code here
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
 
-        Cursor cursor = queryBuilder.query(db, projection, selection,
+        Cursor cursor = queryBuilder.query(db, projection, WHERE,
                 selectionArgs, groupBy, null, sortOrder);
         return cursor;
 

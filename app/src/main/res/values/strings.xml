@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">B-Team-App</string>
-    <string name="action_settings">Settings</string>
 
+    <!-- Action descriptions -->
+    <string name="action_settings">Settings</string>
+    <string name="action_search">Suche</string>
+    <string name="action_up">Zurück</string>
+    <string name="action_clear_search">Suche löschen</string>
+
+    <!-- Database field names -->
     <string name="key_title">Titel</string>
     <string name="key_author">Autor</string>
     <string name="key_isbn">ISBN</string>
@@ -17,8 +23,17 @@
     <string name="cab_change">Eintrag ändern</string>
     <string name="cab_checked_string">ausgewählt</string>
 
+    <!-- Button texts-->
     <string name="button_delete">Löschen</string>
     <string name="button_save">Speichern</string>
     <string name="button_cancel">Abbrechen</string>
+
+    <!-- Search -->
+    <string name="search_hint_nocontext">Suche&#8230;</string>
+    <string name="search_hint_context_start">Suche in </string>
+    <string name="search_hint_context_end">&#8230;</string>
+
+    <!-- Image descriptions -->
+    <string name="image_desc_icon_book">Buch Icon</string>
 
 </resources>

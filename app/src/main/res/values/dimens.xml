@@ -1,4 +1,6 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="key_value_margin">100dp</dimen>
+
+    <dimen name="search_bar_height">56dp</dimen>
 </resources>
