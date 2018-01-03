@@ -28,8 +28,11 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     //Ids of the loaders used for the different search categories
     private static final int NO_SEARCH = 0;
     private static final int LID_BOOKS_TITLE = 1;
+    private static final int LID_AUTHORS = 2;
 
-    private SimpleCursorAdapter dataAdapter;
+    private SeparatedListAdapter dataAdapter;
+    private SimpleCursorAdapter titlesAdapter;
+    private SimpleCursorAdapter authorsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,13 +75,13 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         //Open keyboard
         //TODO: Make keyboard open and close appropriately
         InputMethodManager imm = (InputMethodManager)getSystemService(this.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.RESULT_HIDDEN);
     }
 
     private void displayListView() {
         String[] columns = new String[] {
-                BooksTable.KEY_TITLE,
-                BooksTable.KEY_AUTHOR
+                "name",
+                "info"
         };
 
         int[] to = new int[] {
@@ -86,7 +89,12 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 R.id.itemInfo
         };
 
-        dataAdapter = new SimpleCursorAdapter(this, R.layout.search_result_item, null, columns, to, 0);
+        titlesAdapter = new SimpleCursorAdapter(this, R.layout.search_result_item, null, columns, to, 0);
+        authorsAdapter = new SimpleCursorAdapter(this, R.layout.search_result_item, null, columns, to, 0);
+
+        dataAdapter = new SeparatedListAdapter(this);
+        dataAdapter.addSection(getString(R.string.search_category_header_titles), titlesAdapter);
+        dataAdapter.addSection(getString(R.string.search_category_header_authors), authorsAdapter);
 
         ListView listView = (ListView) findViewById(R.id.searchResultList);
 
@@ -96,23 +104,6 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         getLoaderManager().initLoader(NO_SEARCH, null, this);
     }
 
-    /*
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
-*/
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] projection = null;
@@ -120,11 +111,17 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         boolean errorId = false;
 
         switch (id) {
-            case 0:
+            case NO_SEARCH:
                 return null;
             case LID_BOOKS_TITLE:
                 uri = Uri.parse(BookProvider.URI_SEARCH_BOOKS_FILTER + BooksTable.KEY_TITLE + "/" + searchText);
-                projection = new String[]{BooksTable.KEY_ID, BooksTable.KEY_TITLE, BooksTable.KEY_AUTHOR};
+                projection = new String[]{BooksTable.KEY_ID, BooksTable.KEY_TITLE + " AS name", AuthorsTable.KEY_NAME + " AS info"};
+                break;
+            case LID_AUTHORS:
+                //uri = Uri.parse(BookProvider.URI_SEARCH_BOOKS_GROUP_FILTER + BooksTable.KEY_AUTHOR + "/" + searchText);
+                //projection = new String[]{BooksTable.KEY_ID, BooksTable.KEY_AUTHOR + " AS name", BooksTable.KEY_TITLE + " AS info"};
+                uri = BookProvider.URI_AUTHORS;
+                projection = new String[]{AuthorsTable.KEY_ID, AuthorsTable.KEY_NAME + " AS name", AuthorsTable.KEY_NAME + " AS info"};
                 break;
             default:
                 errorId = true;
@@ -141,7 +138,20 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Swap the new cursor in.  (The framework will take care of closing the
         // old cursor once we return.)
-        dataAdapter.swapCursor(data);
+
+        SimpleCursorAdapter cursorAdapter;
+        switch (loader.getId()) {
+            case LID_BOOKS_TITLE:
+                cursorAdapter = (SimpleCursorAdapter) dataAdapter.getSection(getString(R.string.search_category_header_titles));
+                cursorAdapter.swapCursor(data);
+                return;
+            case LID_AUTHORS:
+                cursorAdapter = (SimpleCursorAdapter) dataAdapter.getSection(getString(R.string.search_category_header_authors));
+                cursorAdapter.swapCursor(data);
+                return;
+            default:
+                return;
+        }
     }
 
     @Override
@@ -149,7 +159,19 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         // This is called when the last Cursor provided to onLoadFinished()
         // above is about to be closed.  We need to make sure we are no
         // longer using it.
-        dataAdapter.swapCursor(null);
+        SimpleCursorAdapter cursorAdapter;
+        switch (loader.getId()) {
+            case LID_BOOKS_TITLE:
+                cursorAdapter = (SimpleCursorAdapter) dataAdapter.getSection(getString(R.string.search_category_header_titles));
+                cursorAdapter.swapCursor(null);
+                return;
+            case LID_AUTHORS:
+                cursorAdapter = (SimpleCursorAdapter) dataAdapter.getSection(getString(R.string.search_category_header_authors));
+                cursorAdapter.swapCursor(null);
+                return;
+            default:
+                return;
+        }
     }
 
     /**
@@ -187,7 +209,13 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     private SearchResult search(String searchtext, @Nullable SearchContext searchContext) {
         SearchResult searchResult = new SearchResult(searchtext, "Books", "Authors");
 
-        //start search for matches in the title of the Books
+        //start search for matches in the title of the books
+        if(getLoaderManager().getLoader(LID_BOOKS_TITLE) != null){
+            getLoaderManager().restartLoader(LID_BOOKS_TITLE, null, this);
+        } else {
+            getLoaderManager().initLoader(LID_BOOKS_TITLE, null, this);
+        }
+        //start search for matches in the authors
         if(getLoaderManager().getLoader(LID_BOOKS_TITLE) != null){
             getLoaderManager().restartLoader(LID_BOOKS_TITLE, null, this);
         } else {

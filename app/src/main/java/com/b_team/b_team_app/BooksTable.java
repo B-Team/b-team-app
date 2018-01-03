@@ -4,8 +4,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 /**
- * A static class that saves all SQL related strings that concern the library table.
- * It is used to get the correct names for rows. It also defines a SQL commands for
+ * A static class that saves all SQL related strings that concern the bookstable.
+ * It is used to get the correct names for rows. It also defines SQL commands for
  * the {@link DatabaseHelper#onCreate(SQLiteDatabase) onCreate} and {@link DatabaseHelper#onUpgrade(SQLiteDatabase,int,int) onUpgrade}
  * methods of the {@link DatabaseHelper} class.
  */
@@ -13,7 +13,7 @@ public class BooksTable {
 
     public static final String KEY_ID = "_id";
     public static final String KEY_TITLE = "title";
-    public static final String KEY_AUTHOR = "author";
+    public static final String KEY_AUTHOR_ID = "author_id";
     public static final String KEY_ISBN = "isbn";
     public static final String KEY_PUBLISHER = "publisher";
     public static final String KEY_PICTURES = "pictures";
@@ -34,7 +34,7 @@ public class BooksTable {
             "CREATE TABLE if not exists " + TABLE_NAME + " (" +
                     KEY_ID + " integer PRIMARY KEY autoincrement," +
                     KEY_TITLE + "," +
-                    KEY_AUTHOR + "," +
+                    KEY_AUTHOR_ID + "," +
                     KEY_ISBN + "," +
                     KEY_PUBLISHER + "," +
                     KEY_PICTURES + "," +
@@ -68,8 +68,6 @@ public class BooksTable {
      * @param newVersion    the version of the databank after this upgrade
      */
     public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(LOG_TAG, "Upgrading database from version " + oldVersion + " to "
-                + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }

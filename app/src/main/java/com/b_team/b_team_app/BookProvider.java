@@ -16,22 +16,26 @@ public class BookProvider extends ContentProvider{
     private static final int ALL_BOOKS = 1;
     private static final int SINGLE_BOOK = 2;
     private static final int ALL_AUTHORS = 3;
-    private static final int SEARCH_BOOKS_GROUP = 4;
-    private static final int SEARCH_BOOKS_GROUP_FILTER = 5;
-    private static final int SEARCH_BOOKS_FILTER = 6;
-    private static final int SEARCH_BOOKS_FILTER_EMPTY= 7;
+    private static final int SINGLE_AUTHOR = 4;
+    private static final int SEARCH_BOOKS_GROUP = 5;
+    private static final int SEARCH_BOOKS_GROUP_FILTER = 6;
+    private static final int SEARCH_BOOKS_FILTER = 7;
+    private static final int SEARCH_BOOKS_FILTER_EMPTY= 8;
     //Add "id" of aliases here
 
     private static final String AUTHORITY = "com.b_team.bookprovider";
 
-    public static final Uri CONTENT_URI =
+    public static final Uri URI_BOOKS =
             Uri.parse("content://" + AUTHORITY + "/books");
+
+    public static final Uri URI_AUTHORS =
+            Uri.parse("content://" + AUTHORITY + "/authors");
 
     public static final Uri URI_SEARCH_BOOKS_FILTER =
             Uri.parse("content://" + AUTHORITY + "/booksearch/");
 
-    public static final Uri AUTHORS_URI =
-            Uri.parse("content://" + AUTHORITY + "/authors");
+    public static final Uri URI_SEARCH_BOOKS_GROUP_FILTER =
+            Uri.parse("content://" + AUTHORITY + "/booksearchgroup/");
 
     private static final UriMatcher uriMatcher;
     static {
@@ -39,6 +43,7 @@ public class BookProvider extends ContentProvider{
         uriMatcher.addURI(AUTHORITY, "books", ALL_BOOKS);
         uriMatcher.addURI(AUTHORITY, "books/#", SINGLE_BOOK);
         uriMatcher.addURI(AUTHORITY, "authors", ALL_AUTHORS);
+        uriMatcher.addURI(AUTHORITY, "authors/#", SINGLE_AUTHOR);
         //Search for all Books grouped by field given in *
         //* must be the correct KEY from BooksTable
         uriMatcher.addURI(AUTHORITY, "booksearchgroup/*", SEARCH_BOOKS_GROUP);
@@ -77,49 +82,72 @@ public class BookProvider extends ContentProvider{
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
+        long id;
+        Uri returnUri;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+
         switch (uriMatcher.match(uri)) {
             case ALL_BOOKS:
-                //do nothing
+                id = db.insert(BooksTable.TABLE_NAME, null, values);
+                returnUri = URI_BOOKS;
+                break;
+            case ALL_AUTHORS:
+                id = db.insert(AuthorsTable.TABLE_NAME, null, values);
+                returnUri = URI_AUTHORS;
                 break;
             //Additional alias code here
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
-        long id = db.insert(BooksTable.TABLE_NAME, null, values);
         getContext().getContentResolver().notifyChange(uri, null);
-        return Uri.parse(CONTENT_URI + "/" + id);
+        return Uri.parse(returnUri + "/" + id);
     }
-    
+
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(BooksTable.TABLE_NAME);
         String groupBy = null;
         //selection is used if matched uri doesnt provide a different one
         String WHERE = selection;
 
         switch (uriMatcher.match(uri)) {
             case ALL_BOOKS:
-                //do nothing
+                queryBuilder.setTables(
+                        BooksAuthorsTable.TABLE_NAME +
+                                "INNER JOIN" +
+                                BooksTable.TABLE_NAME +
+                                "ON" +
+                                BooksAuthorsTable.KEY_BOOK_ID + "=" + BooksTable.KEY_ID +
+                                "INNER JOIN" +
+                                AuthorsTable.TABLE_NAME +
+                                "ON" +
+                                BooksAuthorsTable.KEY_AUTHOR_ID + "=" + AuthorsTable.KEY_ID
+                );
                 break;
             case SINGLE_BOOK:
-                String id = uri.getPathSegments().get(1);
-                queryBuilder.appendWhere(BooksTable.KEY_ID + "=" + id);
+                queryBuilder.setTables(BooksTable.TABLE_NAME);
+                queryBuilder.appendWhere(BooksTable.KEY_ID + "=" + uri.getPathSegments().get(1));
                 break;
             case ALL_AUTHORS:
-                groupBy = BooksTable.KEY_AUTHOR;
+                queryBuilder.setTables(AuthorsTable.TABLE_NAME);
+                break;
+            case SINGLE_AUTHOR:
+                queryBuilder.setTables(AuthorsTable.TABLE_NAME);
+                queryBuilder.appendWhere(AuthorsTable.KEY_ID + "=" + uri.getPathSegments().get(1));
                 break;
             case SEARCH_BOOKS_GROUP:
+                queryBuilder.setTables(BooksTable.TABLE_NAME);
                 groupBy = uri.getPathSegments().get(1);
                 break;
             case SEARCH_BOOKS_GROUP_FILTER:
+                queryBuilder.setTables(BooksTable.TABLE_NAME);
                 WHERE = uri.getPathSegments().get(1) + " LIKE '%" + uri.getPathSegments().get(2) + "%'";
                 groupBy = uri.getPathSegments().get(1);
                 break;
             case SEARCH_BOOKS_FILTER:
+                queryBuilder.setTables(BooksTable.TABLE_NAME);
                 WHERE = uri.getPathSegments().get(1) + " LIKE '%" + uri.getPathSegments().get(2) + "%'";
                 break;
             case SEARCH_BOOKS_FILTER_EMPTY:
@@ -144,8 +172,14 @@ public class BookProvider extends ContentProvider{
                 //do nothing
                 break;
             case SINGLE_BOOK:
-                String id = uri.getPathSegments().get(1);
-                selection = BooksTable.KEY_ID + "=" + id
+                selection = BooksTable.KEY_ID + "=" + uri.getPathSegments().get(1)
+                        + (!TextUtils.isEmpty(selection) ?
+                        " AND (" + selection + ')' : "");
+                break;
+            case ALL_AUTHORS:
+                break;
+            case SINGLE_AUTHOR:
+                selection = AuthorsTable.KEY_ID + "=" + uri.getPathSegments().get(1)
                         + (!TextUtils.isEmpty(selection) ?
                         " AND (" + selection + ')' : "");
                 break;
@@ -163,13 +197,21 @@ public class BookProvider extends ContentProvider{
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        //TODO: Add conditional checks for usage of deleted data and update all now invalid fields
         switch (uriMatcher.match(uri)) {
             case ALL_BOOKS:
                 //do nothing
                 break;
             case SINGLE_BOOK:
-                String id = uri.getPathSegments().get(1);
-                selection = BooksTable.KEY_ID + "=" + id
+                selection = BooksTable.KEY_ID + "=" + uri.getPathSegments().get(1)
+                        + (!TextUtils.isEmpty(selection) ?
+                        " AND (" + selection + ')' : "");
+                break;
+            case ALL_AUTHORS:
+                //do nothing
+                break;
+            case SINGLE_AUTHOR:
+                selection = AuthorsTable.KEY_ID + "=" + uri.getPathSegments().get(1)
                         + (!TextUtils.isEmpty(selection) ?
                         " AND (" + selection + ')' : "");
                 break;
@@ -177,7 +219,6 @@ public class BookProvider extends ContentProvider{
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
-        //Handle update and potential deletion of pictures here by getting the path from the table and comparing for a change
         int updateCount = db.update(BooksTable.TABLE_NAME, values, selection, selectionArgs);
         getContext().getContentResolver().notifyChange(uri, null);
         return updateCount;

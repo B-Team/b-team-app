@@ -33,6 +33,10 @@
     <string name="search_hint_context_start">Suche in </string>
     <string name="search_hint_context_end">&#8230;</string>
 
+    <!-- Search result category headers -->
+    <string name="search_category_header_titles">Titel</string>
+    <string name="search_category_header_authors">Autoren</string>
+
     <!-- Image descriptions -->
     <string name="image_desc_icon_book">Buch Icon</string>
 
