@@ -70,7 +70,7 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
 
         // Create a SimpleCursorAdapter for the author field.
         dataAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_dropdown_item_1line,
-                null, new String[]{BooksTable.KEY_AUTHOR}, new int[]{android.R.id.text1}, 0);
+                null, new String[]{BooksTable.KEY_AUTHOR_ID}, new int[]{android.R.id.text1}, 0);
         authorView = (AutoCompleteTextView) findViewById(R.id.editText_author);
         authorView.setAdapter(dataAdapter);
 
@@ -86,7 +86,7 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
                 Cursor cursor = (Cursor) listView.getItemAtPosition(position);
 
                 // Get the author from this row in the database.
-                String selAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR));
+                String selAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR_ID));
 
                 // Update the TextView
                 authorView.setText(selAuthor);
@@ -98,7 +98,7 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
         dataAdapter.setCursorToStringConverter(new CursorToStringConverter() {
             public String convertToString(android.database.Cursor cursor) {
                 // Get the label for this row out of the BooksTable.KEY_AUTHOR column
-                final int columnIndex = cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR);
+                final int columnIndex = cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR_ID);
                 final String str = cursor.getString(columnIndex);
                 return str;
             }
@@ -121,11 +121,11 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
     {
         String[] projection = {
                 BooksTable.KEY_ID,
-                BooksTable.KEY_AUTHOR,
+                BooksTable.KEY_AUTHOR_ID,
         };
 
         CursorLoader cursorLoader = new CursorLoader(this,
-                BookProvider.AUTHORS_URI, projection, null, null, null);
+                BookProvider.URI_AUTHORS, projection, null, null, null);
 
         return cursorLoader;
     }
@@ -195,7 +195,7 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
 
                 ContentValues values = new ContentValues();
                 values.put(BooksTable.KEY_TITLE, mytitle);
-                values.put(BooksTable.KEY_AUTHOR, myauthor);
+                values.put(BooksTable.KEY_AUTHOR_ID, myauthor);
                 values.put(BooksTable.KEY_ISBN, myisbn);
                 values.put(BooksTable.KEY_PUBLISHER, mypublisher);
                 values.put(BooksTable.KEY_NPAGES, mynPages);
@@ -205,11 +205,11 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
 
                 // insert a record
                 if(mode.trim().equalsIgnoreCase("add")){
-                    getContentResolver().insert(BookProvider.CONTENT_URI, values);
+                    getContentResolver().insert(BookProvider.URI_BOOKS, values);
                 }
                 // update a record
                 else {
-                    Uri uri = Uri.parse(BookProvider.CONTENT_URI + "/" + id);
+                    Uri uri = Uri.parse(BookProvider.URI_BOOKS + "/" + id);
                     getContentResolver().update(uri, values, null, null);
                 }
                 finish();
@@ -217,7 +217,7 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
 
             case R.id.delete:
                 // delete a record
-                Uri uri = Uri.parse(BookProvider.CONTENT_URI + "/" + id);
+                Uri uri = Uri.parse(BookProvider.URI_BOOKS + "/" + id);
                 getContentResolver().delete(uri, null, null);
                 finish();
                 break;
@@ -235,20 +235,19 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
 
         String[] projection = {
                 BooksTable.KEY_TITLE,
-                BooksTable.KEY_AUTHOR,
-                BooksTable.KEY_ISBN,
-                BooksTable.KEY_PUBLISHER,
+                BooksTable.KEY_AUTHOR_ID,
+                BooksTable.KEY_ISBN,                BooksTable.KEY_PUBLISHER,
                 BooksTable.KEY_NPAGES,
                 BooksTable.KEY_NVOLUME,
                 BooksTable.KEY_GENRE,
                 BooksTable.KEY_OWNERSHIP};
-        Uri uri = Uri.parse(BookProvider.CONTENT_URI + "/" + id);
+        Uri uri = Uri.parse(BookProvider.URI_BOOKS + "/" + id);
         Cursor cursor = getContentResolver().query(uri, projection, null, null,
                 null);
         if (cursor != null) {
             cursor.moveToFirst();
             String myTitle = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_TITLE));
-            String myAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR));
+            String myAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR_ID));
             String myIsbn = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_ISBN));
             String myPublisher = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_PUBLISHER));
             String myNPages = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_NPAGES));

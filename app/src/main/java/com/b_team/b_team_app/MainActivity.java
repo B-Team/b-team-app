@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        displayListView();
+        //displayListView();
 
         /*Contextual action bar allows for multiple selections by touching and holding.
         Not bugged anymore, but still very poorly integrated. The tapping of books should not
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onResume() {
         super.onResume();
-        restartLoader();
+        //restartLoader();
     }
 
     private void restartLoader() {
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // The desired columns to be bound
         String[] columns = new String[] {
                 BooksTable.KEY_TITLE,
-                BooksTable.KEY_AUTHOR,
+                BooksTable.KEY_AUTHOR_ID,
               //BooksTable.KEY_ISBN,
               //BooksTable.KEY_PUBLISHER,
               //BooksTable.KEY_PICTURES,
@@ -87,12 +87,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // the XML defined views which the data will be bound to
         int[] to = new int[] {
-                R.id.textViewTitleValue,
-                R.id.textViewAuthorValue
+                //R.id.textViewTitleValue,
+                //R.id.textViewAuthorValue
         };
 
         // create an adapter from the SimpleCursorAdapter
-        dataAdapter = new SimpleCursorAdapter(this, R.layout.book_info, null, columns, to, 0);
+        //activity_book_info is obviously not the correct layout
+        dataAdapter = new SimpleCursorAdapter(this, R.layout.activity_book_info, null, columns, to, 0);
 
         // get reference to the ListView
         ListView listView = (ListView) findViewById(R.id.bookList);
@@ -132,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         String[] projection = {
                 BooksTable.KEY_ID,
                 BooksTable.KEY_TITLE,
-                BooksTable.KEY_AUTHOR,
+                BooksTable.KEY_AUTHOR_ID,
                 //BooksTable.KEY_ISBN,
                 //BooksTable.KEY_PUBLISHER,
                 //BooksTable.KEY_PICTURES,
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 //BooksTable.KEY_LASTEDIT
                 };
         CursorLoader cursorLoader = new CursorLoader(this,
-                BookProvider.CONTENT_URI, projection, null, null, null);
+                BookProvider.URI_BOOKS, projection, null, null, null);
         return cursorLoader;
     }
 
@@ -251,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                                 Cursor cursor = (Cursor) bookListView.getItemAtPosition(position);
                                 String id = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_ID));
 
-                                Uri uri = Uri.parse(BookProvider.CONTENT_URI + "/" + id);
+                                Uri uri = Uri.parse(BookProvider.URI_BOOKS + "/" + id);
                                 getContentResolver().delete(uri, null, null);
                             }
                         }

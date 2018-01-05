@@ -5,9 +5,9 @@
     tools:context="com.b_team.b_team_app.MainActivity">
 
     <item android:id="@+id/action_search"
-        android:icon="@drawable/ic_search_black_24dp"
-        android:title="@string/action_search"
-        app:showAsAction="always" />
+    android:icon="@drawable/ic_search_black_24dp"
+    android:title="@string/action_search"
+    app:showAsAction="always" />
 
 
     <item

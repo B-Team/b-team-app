@@ -13,7 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
-        android:elevation="4dp">
+        android:elevation="4dp"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
 
         <ImageButton
             android:id="@+id/Button_Up"
@@ -68,9 +70,19 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <ListView android:id="@+id/searchResultList"
+    <ListView
+        android:id="@+id/searchResultList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp">
+
+    </ListView>
+
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
 
 </LinearLayout>
 

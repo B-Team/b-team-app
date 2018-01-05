@@ -2,23 +2,25 @@ package com.b_team.b_team_app;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-public class SearchActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class SearchActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
+        SearchStartFragment.OnSearchStartFragmentInteractionListener, SearchInContextFragment.OnSearchInContextFragmentInteractionListener {
 
     private ImageButton bUp, bClear;
     private EditText etSearch;
@@ -71,14 +73,48 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
                 onSearchTextChanged();
             }
         });
-        displayListView();
+
+        //Add the SearchStartFragment if we are not restoring an old state
+        if (savedInstanceState == null) {
+            SearchStartFragment searchStartFragment = new SearchStartFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragmentContainer, searchStartFragment)
+                    .commit();
+        }
+        //displayListView();
         //Open keyboard
         //TODO: Make keyboard open and close appropriately
-        InputMethodManager imm = (InputMethodManager)getSystemService(this.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.RESULT_HIDDEN);
+        //InputMethodManager imm = (InputMethodManager)getSystemService(this.INPUT_METHOD_SERVICE);
+        //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.RESULT_HIDDEN);
     }
 
-    private void displayListView() {
+    @Override
+    public void onSearchStartFragmentInteraction(SearchCategory item) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        SearchContext searchContext = new SearchContext(item, "", item.isAlwaysSingular());
+        transaction.replace(R.id.fragmentContainer, SearchInContextFragment.newInstance(searchContext));
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    @Override
+    public void onBookSelected(int bookId) {
+        //TODO: Open book info page
+    }
+
+    @Override
+    public void onNewContextSelected(SearchContext searchContext) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.fragmentContainer, SearchInContextFragment.newInstance(searchContext));
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    /*private void displayListView() {
         String[] columns = new String[] {
                 "name",
                 "info"
@@ -102,7 +138,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
 
         //Intitialise a loader with an empty cursor
         getLoaderManager().initLoader(NO_SEARCH, null, this);
-    }
+    }*/
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -179,7 +215,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
      */
     private void onUpClicked() {
         //TODO: Add appropriate up navigation
-        finish();
+        onBackPressed();
+        //finish();
     }
 
     /**
@@ -187,6 +224,10 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
      */
     private void onClearClicked() {
         etSearch.setText("");
+
+        //This opens the book info page for testing
+        //This should be removed once the database is connected
+        startActivity(new Intent(getBaseContext(), BookInfoActivity.class));
     }
 
     /**
@@ -194,7 +235,36 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
      */
     private void onSearchTextChanged() {
         searchText = etSearch.getText().toString();
-        search(searchText, null);
+
+        //Show SearchStartFragment if empty and SearchInAllFragment otherwise
+        if (searchText == "") {
+            //Try to get the existing SearchStartFragment
+            Fragment searchStartFragment = getSupportFragmentManager().findFragmentByTag("SearchStart");
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            //Create a new Fragment if no old one is there
+            if (searchStartFragment == null) {
+                searchStartFragment = new SearchStartFragment();
+            } else {
+                Log.d("Search", "Old SearchStartFragment found");
+            }
+            transaction.replace(R.id.fragmentContainer, searchStartFragment);
+            transaction.commit();
+        } else {
+            //Try to get the existing SearchInAllFragment
+            Fragment searchAllFragment = getSupportFragmentManager().findFragmentByTag("SearchAll");
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            //Create a new Fragment if no old one is there
+            if (searchAllFragment == null) {
+                searchAllFragment = new SearchInAllFragment();
+            } else {
+                Log.d("Search", "Old SearchInAllFragment found");
+            }
+            transaction.replace(R.id.fragmentContainer, searchAllFragment);
+            transaction.commit();
+
+            //Start a search with the current search text
+            //search(searchText, null);
+        }
     }
 
     /**

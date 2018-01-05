@@ -6,6 +6,7 @@
     <string name="action_search">Suche</string>
     <string name="action_up">Zurück</string>
     <string name="action_clear_search">Suche löschen</string>
+    <string name="action_share">Share</string>
 
     <!-- Database field names -->
     <string name="key_title">Titel</string>
@@ -36,8 +37,27 @@
     <!-- Search result category headers -->
     <string name="search_category_header_titles">Titel</string>
     <string name="search_category_header_authors">Autoren</string>
+    <string name="search_category_header_publishers">Verlage</string>
+    <string name="search_category_header_genres">Genres</string>
+    <string name="search_category_header_wishlist">Wunschliste</string>
+    <string name="search_category_header_ratings">Bewertungen</string>
+
+    <!-- Search count messages -->
+    <string name="search_count_messages_titles">Titel gespeichert</string>
+    <string name="search_count_messages_authors">Autoren gespeichert</string>
+    <string name="search_count_messages_publishers">Verlage gespeichert</string>
+    <string name="search_count_messages_genres">Genres gespeichert</string>
+    <string name="search_count_messages_wishlist">Wünsche notiert</string>
+    <string name="search_count_messages_ratings">Bücher bewertet</string>
 
     <!-- Image descriptions -->
-    <string name="image_desc_icon_book">Buch Icon</string>
+    <string name="image_desc_icon_book">Icon Buch</string>
+    <string name="image_desc_book_cover">Buchcover</string>
+
+    <!-- Misc -->
+    <string name="status_message_loading">Lädt&#8230;</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

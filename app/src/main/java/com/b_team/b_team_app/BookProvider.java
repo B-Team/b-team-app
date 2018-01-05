@@ -116,13 +116,13 @@ public class BookProvider extends ContentProvider{
             case ALL_BOOKS:
                 queryBuilder.setTables(
                         BooksAuthorsTable.TABLE_NAME +
-                                "INNER JOIN" +
+                                " INNER JOIN " +
                                 BooksTable.TABLE_NAME +
-                                "ON" +
+                                " ON " +
                                 BooksAuthorsTable.KEY_BOOK_ID + "=" + BooksTable.KEY_ID +
-                                "INNER JOIN" +
+                                " INNER JOIN " +
                                 AuthorsTable.TABLE_NAME +
-                                "ON" +
+                                " ON " +
                                 BooksAuthorsTable.KEY_AUTHOR_ID + "=" + AuthorsTable.KEY_ID
                 );
                 break;
