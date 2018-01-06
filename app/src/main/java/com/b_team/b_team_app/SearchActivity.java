@@ -78,7 +78,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         if (savedInstanceState == null) {
             SearchStartFragment searchStartFragment = new SearchStartFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragmentContainer, searchStartFragment)
+                    .add(R.id.fragmentContainer, searchStartFragment, "SearchStart")
                     .commit();
         }
         //displayListView();
@@ -237,17 +237,15 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         searchText = etSearch.getText().toString();
 
         //Show SearchStartFragment if empty and SearchInAllFragment otherwise
-        if (searchText == "") {
+        if (searchText.length() == 0) {
             //Try to get the existing SearchStartFragment
             Fragment searchStartFragment = getSupportFragmentManager().findFragmentByTag("SearchStart");
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             //Create a new Fragment if no old one is there
             if (searchStartFragment == null) {
                 searchStartFragment = new SearchStartFragment();
-            } else {
-                Log.d("Search", "Old SearchStartFragment found");
             }
-            transaction.replace(R.id.fragmentContainer, searchStartFragment);
+            transaction.replace(R.id.fragmentContainer, searchStartFragment, "SearchStart");
             transaction.commit();
         } else {
             //Try to get the existing SearchInAllFragment
@@ -256,10 +254,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
             //Create a new Fragment if no old one is there
             if (searchAllFragment == null) {
                 searchAllFragment = new SearchInAllFragment();
-            } else {
-                Log.d("Search", "Old SearchInAllFragment found");
             }
-            transaction.replace(R.id.fragmentContainer, searchAllFragment);
+            transaction.replace(R.id.fragmentContainer, searchAllFragment, "SearchAll");
             transaction.commit();
 
             //Start a search with the current search text
