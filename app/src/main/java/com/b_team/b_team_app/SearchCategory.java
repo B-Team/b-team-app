@@ -21,6 +21,7 @@ public class SearchCategory implements Serializable{
     public static final int CATEGORY_GENRES = 3;
     public static final int CATEGORY_WISHLIST = 4;
     public static final int CATEGORY_RATINGS = 5;
+    public static final int CATEGORY_ALL = 6;
 
     //Array of categories
     public static final ArrayList<SearchCategory> CATEGORIES = new ArrayList<>();

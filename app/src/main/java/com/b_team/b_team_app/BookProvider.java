@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 public class BookProvider extends ContentProvider{
 
@@ -21,6 +22,8 @@ public class BookProvider extends ContentProvider{
     private static final int SEARCH_BOOKS_GROUP_FILTER = 6;
     private static final int SEARCH_BOOKS_FILTER = 7;
     private static final int SEARCH_BOOKS_FILTER_EMPTY= 8;
+
+    private static final int BOOKS_AUTHORS = 9;
     //Add "id" of aliases here
 
     private static final String AUTHORITY = "com.b_team.bookprovider";
@@ -30,6 +33,9 @@ public class BookProvider extends ContentProvider{
 
     public static final Uri URI_AUTHORS =
             Uri.parse("content://" + AUTHORITY + "/authors");
+
+    public static final Uri URI_BOOKS_AUTHORS =
+            Uri.parse("content://" + AUTHORITY + "/booksauthors");
 
     public static final Uri URI_SEARCH_BOOKS_FILTER =
             Uri.parse("content://" + AUTHORITY + "/booksearch/");
@@ -44,6 +50,7 @@ public class BookProvider extends ContentProvider{
         uriMatcher.addURI(AUTHORITY, "books/#", SINGLE_BOOK);
         uriMatcher.addURI(AUTHORITY, "authors", ALL_AUTHORS);
         uriMatcher.addURI(AUTHORITY, "authors/#", SINGLE_AUTHOR);
+        uriMatcher.addURI(AUTHORITY, "booksauthors", BOOKS_AUTHORS);
         //Search for all Books grouped by field given in *
         //* must be the correct KEY from BooksTable
         uriMatcher.addURI(AUTHORITY, "booksearchgroup/*", SEARCH_BOOKS_GROUP);
@@ -60,6 +67,7 @@ public class BookProvider extends ContentProvider{
     @Override
     public boolean onCreate() {
         dbHelper = new DatabaseHelper(getContext());
+        dbHelper.onCreate(dbHelper.getWritableDatabase());
         return false;
     }
 
@@ -90,10 +98,17 @@ public class BookProvider extends ContentProvider{
             case ALL_BOOKS:
                 id = db.insert(BooksTable.TABLE_NAME, null, values);
                 returnUri = URI_BOOKS;
+                Log.d("Insert", returnUri.toString() + id);
                 break;
             case ALL_AUTHORS:
                 id = db.insert(AuthorsTable.TABLE_NAME, null, values);
                 returnUri = URI_AUTHORS;
+                Log.d("Insert", returnUri.toString() + id);
+                break;
+            case BOOKS_AUTHORS:
+                id = db.insert(BooksAuthorsTable.TABLE_NAME, null, values);
+                returnUri = URI_BOOKS_AUTHORS;
+                Log.d("Insert", returnUri.toString() + id);
                 break;
             //Additional alias code here
             default:

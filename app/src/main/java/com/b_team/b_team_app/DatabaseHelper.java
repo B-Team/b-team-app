@@ -18,6 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         BooksTable.onCreate(db);
         AuthorsTable.onCreate(db);
+        BooksAuthorsTable.onCreate(db);
     }
 
     @Override
@@ -26,5 +27,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                 + newVersion + ", which will destroy all old data");
         BooksTable.onUpgrade(db, oldVersion, newVersion);
         AuthorsTable.onUpgrade(db, oldVersion, newVersion);
+        BooksAuthorsTable.onUpgrade(db, oldVersion, newVersion);
     }
 }

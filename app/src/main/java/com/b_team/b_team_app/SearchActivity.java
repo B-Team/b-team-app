@@ -7,7 +7,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +25,11 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     private EditText etSearch;
 
     private String searchText;
+
+    //The searchContext we are currently searching in
+    private SearchContext currentSearchContext;
+    //The fragment that should receive the next search result
+    private SearchListener currentReceiver;
 
     //Ids of the loaders used for the different search categories
     private static final int NO_SEARCH = 0;
@@ -74,18 +78,34 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
             }
         });
 
-        //Add the SearchStartFragment if we are not restoring an old state
         if (savedInstanceState == null) {
+            //Add the SearchStartFragment if we are not restoring an old state
             SearchStartFragment searchStartFragment = new SearchStartFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragmentContainer, searchStartFragment, "SearchStart")
                     .commit();
+
+            currentSearchContext = null;
+        } else {
+            currentSearchContext = (SearchContext) savedInstanceState.getSerializable("currentSearchContext");
+            //searchText = savedInstanceState.getString("searchText");
+            //etSearch.setText(searchText);
         }
         //displayListView();
         //Open keyboard
         //TODO: Make keyboard open and close appropriately
         //InputMethodManager imm = (InputMethodManager)getSystemService(this.INPUT_METHOD_SERVICE);
         //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.RESULT_HIDDEN);
+    }
+
+    //This gets called before the activity is destroyed
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("currentSearchContext", currentSearchContext);
+        outState.putString("searchText", searchText);
+
+        // call superclass to save any view hierarchy
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -97,6 +117,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         transaction.addToBackStack(null);
 
         transaction.commit();
+
+        currentSearchContext = searchContext;
     }
 
     @Override
@@ -112,6 +134,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         transaction.addToBackStack(null);
 
         transaction.commit();
+
+        currentSearchContext = searchContext;
     }
 
     /*private void displayListView() {
@@ -175,6 +199,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         // Swap the new cursor in.  (The framework will take care of closing the
         // old cursor once we return.)
 
+        currentReceiver.onSearchComplete(data);
+        /*
         SimpleCursorAdapter cursorAdapter;
         switch (loader.getId()) {
             case LID_BOOKS_TITLE:
@@ -188,6 +214,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
             default:
                 return;
         }
+        */
     }
 
     @Override
@@ -195,6 +222,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         // This is called when the last Cursor provided to onLoadFinished()
         // above is about to be closed.  We need to make sure we are no
         // longer using it.
+        currentReceiver.onSearchComplete(null);
+        /*
         SimpleCursorAdapter cursorAdapter;
         switch (loader.getId()) {
             case LID_BOOKS_TITLE:
@@ -208,6 +237,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
             default:
                 return;
         }
+        */
     }
 
     /**
@@ -259,7 +289,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
             transaction.commit();
 
             //Start a search with the current search text
-            //search(searchText, null);
+            //search(searchText, currentSearchContext);
         }
     }
 
@@ -272,9 +302,34 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
      * @see                 SearchResult
      * @see                 SearchContext
      */
-    private SearchResult search(String searchtext, @Nullable SearchContext searchContext) {
+    private SearchResult search(String searchtext, SearchContext searchContext) {
         SearchResult searchResult = new SearchResult(searchtext, "Books", "Authors");
 
+        switch (currentSearchContext.getSearchCategory().getId()) {
+            case SearchCategory.CATEGORY_TITLES:
+                if(getLoaderManager().getLoader(LID_BOOKS_TITLE) != null){
+                    getLoaderManager().restartLoader(LID_BOOKS_TITLE, null, this);
+                } else {
+                    getLoaderManager().initLoader(LID_BOOKS_TITLE, null, this);
+                }
+                break;
+            case SearchCategory.CATEGORY_AUTHORS:
+                break;
+            case SearchCategory.CATEGORY_PUBLISHERS:
+                break;
+            case SearchCategory.CATEGORY_GENRES:
+                break;
+            case SearchCategory.CATEGORY_WISHLIST:
+                break;
+            case SearchCategory.CATEGORY_RATINGS:
+                break;
+            case SearchCategory.CATEGORY_ALL:
+                break;
+            default:
+                break;
+        }
+
+        /*
         //start search for matches in the title of the books
         if(getLoaderManager().getLoader(LID_BOOKS_TITLE) != null){
             getLoaderManager().restartLoader(LID_BOOKS_TITLE, null, this);
@@ -287,7 +342,19 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         } else {
             getLoaderManager().initLoader(LID_BOOKS_TITLE, null, this);
         }
+        */
 
         return  searchResult;
+    }
+
+    //This function gets called in onCreateView() in search fragments to fill their result lists
+    public void requestInitSearch() {
+        search("", currentSearchContext);
+    }
+
+    //This function gets called in onAttach() in search fragments to set them as the target for searches
+    public void requestSearchResults(SearchContext searchContext, SearchListener receiver) {
+        currentSearchContext = searchContext;
+        currentReceiver = receiver;
     }
 }

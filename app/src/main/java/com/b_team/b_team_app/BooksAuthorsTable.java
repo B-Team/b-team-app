@@ -8,8 +8,8 @@ public class BooksAuthorsTable {
     public static final String KEY_BOOK_ID = "book_id";
     public static final String KEY_AUTHOR_ID = "author_id";
 
-    private static final String LOG_TAG = "AuthorsTable";
-    public static final String TABLE_NAME = "authors";
+    private static final String LOG_TAG = "BooksAuthorsTable";
+    public static final String TABLE_NAME = "booksauthors";
 
     private static final String DATABASE_CREATE =
             "CREATE TABLE if not exists " + TABLE_NAME + " (" +

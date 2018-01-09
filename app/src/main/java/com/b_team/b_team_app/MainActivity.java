@@ -1,6 +1,7 @@
 package com.b_team.b_team_app;
 
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -20,6 +21,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -45,13 +48,46 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ContentValues values;
+                for (int i=0; i<10; i++) {
+                    int id_book, id_author;
+                    values = new ContentValues();
+                    values.put(BooksTable.KEY_TITLE, randomString(10));
+                    id_book = Integer.parseInt(getContentResolver().insert(BookProvider.URI_BOOKS, values).getPathSegments().get(1));
+
+                    values = new ContentValues();
+                    values.put(AuthorsTable.KEY_NAME, randomString(5));
+                    id_author = Integer.parseInt(getContentResolver().insert(BookProvider.URI_AUTHORS, values).getPathSegments().get(1));
+
+                    values = new ContentValues();
+                    values.put(BooksAuthorsTable.KEY_BOOK_ID, id_book);
+                    values.put(BooksAuthorsTable.KEY_AUTHOR_ID, id_author);
+                    getContentResolver().insert(BookProvider.URI_BOOKS_AUTHORS, values);
+                }
+                /*
                 Intent bookEdit = new Intent(getBaseContext(), BookEditActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("mode", "add");
                 bookEdit.putExtras(bundle);
                 startActivity(bookEdit);
+                */
             }
         });
+    }
+
+    //Function to help fill the database for testing
+    private String randomString(int length) {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = length;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        return buffer.toString();
     }
 
     @Override
@@ -70,19 +106,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // The desired columns to be bound
         String[] columns = new String[] {
                 BooksTable.KEY_TITLE,
-                BooksTable.KEY_AUTHOR_ID,
-              //BooksTable.KEY_ISBN,
-              //BooksTable.KEY_PUBLISHER,
-              //BooksTable.KEY_PICTURES,
-              //BooksTable.KEY_NPAGES,
-              //BooksTable.KEY_NVOLUME,
-              //BooksTable.KEY_GENRE,
-              //BooksTable.KEY_SHORTDESCRIPTION,
-              //BooksTable.KEY_LONGDESCRIPTION,
-              //BooksTable.KEY_REVIEW,
-              //BooksTable.KEY_PRICE,
-              //BooksTable.KEY_OWNERSHIP,
-              //BooksTable.KEY_LASTEDIT
+                BooksTable.KEY_AUTHOR_ID
         };
 
         // the XML defined views which the data will be bound to
@@ -133,19 +157,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         String[] projection = {
                 BooksTable.KEY_ID,
                 BooksTable.KEY_TITLE,
-                BooksTable.KEY_AUTHOR_ID,
-                //BooksTable.KEY_ISBN,
-                //BooksTable.KEY_PUBLISHER,
-                //BooksTable.KEY_PICTURES,
-                //BooksTable.KEY_NPAGES,
-                //BooksTable.KEY_NVOLUME,
-                //BooksTable.KEY_GENRE,
-                //BooksTable.KEY_SHORTDESCRIPTION,
-                //BooksTable.KEY_LONGDESCRIPTION,
-                //BooksTable.KEY_REVIEW,
-                //BooksTable.KEY_PRICE,
-                //BooksTable.KEY_OWNERSHIP,
-                //BooksTable.KEY_LASTEDIT
+                BooksTable.KEY_AUTHOR_ID
                 };
         CursorLoader cursorLoader = new CursorLoader(this,
                 BookProvider.URI_BOOKS, projection, null, null, null);

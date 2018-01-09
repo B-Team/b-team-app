@@ -14,13 +14,14 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-public class SearchInContextFragment extends Fragment {
+public class SearchInContextFragment extends Fragment implements SearchListener{
     private SearchInContextFragment.OnSearchInContextFragmentInteractionListener mListener;
     private ListView listView;
     private TextView tv_categoryName, tv_contextName, tv_contextInfo;
     private SimpleCursorAdapter dataAdapter;
     private SearchCategory searchCategory;
     private SearchContext searchContext;
+    private SearchActivity searchActivity;
 
     public SearchInContextFragment() {
 
@@ -81,25 +82,27 @@ public class SearchInContextFragment extends Fragment {
                     //signal the search activity that a book was selected
                     rowId = cursor.getInt(cursor.getColumnIndexOrThrow(BooksTable.KEY_ID));
                     mListener.onBookSelected(rowId);
-                } else
+                } else {
                     //signal the search activity that a new context was selected
-                switch (searchCategory.getId()) {
-                    case SearchCategory.CATEGORY_AUTHORS:
-                        rowId = cursor.getInt(cursor.getColumnIndexOrThrow(AuthorsTable.KEY_ID));
-                        SearchContext newContext = new SearchContext(searchCategory, cursor.getString(cursor.getColumnIndexOrThrow(AuthorsTable.KEY_NAME)), true);
-                        mListener.onNewContextSelected(newContext);
-                        break;
-                    case SearchCategory.CATEGORY_PUBLISHERS:
-                        //TODO: Get id from PublisherTable
-                        break;
-                    case SearchCategory.CATEGORY_GENRES:
-                        //TODO: Get id from GenresTable
-                        break;
-                    default:
-                        Log.e("SearchInContext", "Invalid category-id: " + searchCategory.getId());
+                    switch (searchCategory.getId()) {
+                        case SearchCategory.CATEGORY_AUTHORS:
+                            rowId = cursor.getInt(cursor.getColumnIndexOrThrow(AuthorsTable.KEY_ID));
+                            SearchContext newContext = new SearchContext(searchCategory, cursor.getString(cursor.getColumnIndexOrThrow(AuthorsTable.KEY_NAME)), true);
+                            mListener.onNewContextSelected(newContext);
+                            break;
+                        case SearchCategory.CATEGORY_PUBLISHERS:
+                            //TODO: Get id from PublisherTable
+                            break;
+                        case SearchCategory.CATEGORY_GENRES:
+                            //TODO: Get id from GenresTable
+                            break;
+                        default:
+                            Log.e("SearchInContext", "Invalid category-id: " + searchCategory.getId());
+                    }
                 }
             }
         });
+        searchActivity.requestInitSearch();
         return view;
     }
 
@@ -112,6 +115,11 @@ public class SearchInContextFragment extends Fragment {
         dataAdapter.swapCursor(data);
     }
 
+    @Override
+    public void onSearchComplete(Cursor data) {
+        dataAdapter.swapCursor(data);
+    }
+
     public void onParentLoaderReset(Loader<Cursor> loader) {
         dataAdapter.swapCursor(null);
     }
@@ -121,6 +129,8 @@ public class SearchInContextFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof SearchStartFragment.OnSearchStartFragmentInteractionListener) {
             mListener = (SearchInContextFragment.OnSearchInContextFragmentInteractionListener) context;
+            searchActivity = (SearchActivity) context;
+            searchActivity.requestSearchResults(searchContext, this);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnSearchStartFragmentInteractionListener");
