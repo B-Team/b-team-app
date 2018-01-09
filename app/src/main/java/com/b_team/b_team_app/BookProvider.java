@@ -67,7 +67,6 @@ public class BookProvider extends ContentProvider{
     @Override
     public boolean onCreate() {
         dbHelper = new DatabaseHelper(getContext());
-        dbHelper.onCreate(dbHelper.getWritableDatabase());
         return false;
     }
 
