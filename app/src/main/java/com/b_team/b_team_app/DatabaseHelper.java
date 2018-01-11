@@ -7,8 +7,8 @@ import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
 
-    final static String DATABASE_NAME = "BTeamAppDb.db";
-    final static int DATABASE_VERSION = 1;
+    public static final String DATABASE_NAME = "BTeamAppDb.db";
+    public static final int DATABASE_VERSION = 1;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -17,9 +17,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d("DatabaseHelper", "onCreate called");
-        AuthorsTable.onCreate(db);
         BooksTable.onCreate(db);
+        AuthorsTable.onCreate(db);
         BooksAuthorsTable.onCreate(db);
+        GenresTable.onCreate(db);
+        BooksGenresTable.onCreate(db);
+        PublishersTable.onCreate(db);
+
     }
 
     @Override
@@ -29,5 +33,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         BooksTable.onUpgrade(db, oldVersion, newVersion);
         AuthorsTable.onUpgrade(db, oldVersion, newVersion);
         BooksAuthorsTable.onUpgrade(db, oldVersion, newVersion);
+        GenresTable.onUpgrade(db, oldVersion, newVersion);
+        BooksGenresTable.onUpgrade(db, oldVersion, newVersion);
+        PublishersTable.onUpgrade(db, oldVersion, newVersion);
     }
 }
