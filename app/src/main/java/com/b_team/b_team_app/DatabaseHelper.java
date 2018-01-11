@@ -16,8 +16,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        BooksTable.onCreate(db);
+        Log.d("DatabaseHelper", "onCreate called");
         AuthorsTable.onCreate(db);
+        BooksTable.onCreate(db);
         BooksAuthorsTable.onCreate(db);
     }
 
