@@ -1,31 +1,23 @@
 package com.b_team.b_team_app;
 
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.content.ContentValues;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
-import android.widget.SimpleCursorAdapter.CursorToStringConverter;
 import android.widget.Toast;
 
-public class BookEditActivity extends Activity implements OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class BookEditActivity extends Activity implements OnClickListener{
 
     private Button save, delete, cancel;
     private String mode;
     private EditText title, author, isbn, publisher, nPages, nVolume, genre, ownership;
     private String id;
-    private AutoCompleteTextView authorView;
     private SimpleCursorAdapter dataAdapter;
 
     @Override
@@ -67,84 +59,12 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
             id = bundle.getString("rowId");
             loadBookInfo();
         }
-
-        // Create a SimpleCursorAdapter for the author field.
-        dataAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_dropdown_item_1line,
-                null, new String[]{BooksTable.KEY_AUTHOR_ID}, new int[]{android.R.id.text1}, 0);
-        authorView = (AutoCompleteTextView) findViewById(R.id.editText_author);
-        authorView.setAdapter(dataAdapter);
-
-        getLoaderManager().initLoader(0, null, this);
-
-        // Set an OnItemClickListener, to update the field when
-        // a choice is made in the AutoCompleteTextView.
-        authorView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> listView, View view,
-                                    int position, long id) {
-
-                // Get the cursor, positioned to the corresponding row in the result set
-                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
-
-                // Get the author from this row in the database.
-                String selAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR_ID));
-
-                // Update the TextView
-                authorView.setText(selAuthor);
-            }
-        });
-
-        // Set the CursorToStringConverter, to provide the labels for the
-        // choices to be displayed in the AutoCompleteTextView.
-        dataAdapter.setCursorToStringConverter(new CursorToStringConverter() {
-            public String convertToString(android.database.Cursor cursor) {
-                // Get the label for this row out of the BooksTable.KEY_AUTHOR column
-                final int columnIndex = cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR_ID);
-                final String str = cursor.getString(columnIndex);
-                return str;
-            }
-        });
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        restartLoader();
     }
-
-    private void restartLoader() {
-        getLoaderManager().restartLoader(0, null, this);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle)
-    {
-        String[] projection = {
-                BooksTable.KEY_ID,
-                BooksTable.KEY_AUTHOR_ID,
-        };
-
-        CursorLoader cursorLoader = new CursorLoader(this,
-                BookProvider.URI_AUTHORS, projection, null, null, null);
-
-        return cursorLoader;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Swap the new cursor in.  (The framework will take care of closing the
-        // old cursor once we return.)
-        dataAdapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed.  We need to make sure we are no
-        // longer using it.
-        dataAdapter.swapCursor(null);
-    }
-
     public void onClick(View v) {
 
         switch (v.getId()) {
@@ -193,24 +113,23 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
                     return;
                 }
 
-                ContentValues values = new ContentValues();
-                values.put(BooksTable.KEY_TITLE, mytitle);
-                values.put(BooksTable.KEY_AUTHOR_ID, myauthor);
-                values.put(BooksTable.KEY_ISBN, myisbn);
-                values.put(BooksTable.KEY_PUBLISHER, mypublisher);
-                values.put(BooksTable.KEY_NPAGES, mynPages);
-                values.put(BooksTable.KEY_NVOLUME, mynVolume);
-                values.put(BooksTable.KEY_GENRE, mygenre);
-                values.put(BooksTable.KEY_OWNERSHIP, myownership);
-
                 // insert a record
                 if(mode.trim().equalsIgnoreCase("add")){
-                    getContentResolver().insert(BookProvider.URI_BOOKS, values);
+                    ContentValues values_book = new ContentValues();
+                    values_book.put(BooksTable.KEY_TITLE, mytitle);
+                    values_book.put(BooksTable.VIEWKEY_AUTHOR, myauthor);
+                    values_book.put(BooksTable.KEY_ISBN, myisbn);
+                    values_book.put(BooksTable.VIEWKEY_PUBLISHER, mypublisher);
+                    values_book.put(BooksTable.VIEWKEY_GENRE, mygenre);
+                    values_book.put(BooksTable.KEY_NPAGES, mynPages);
+                    values_book.put(BooksTable.KEY_NVOLUME, mynVolume);
+                    values_book.put(BooksTable.KEY_OWNERSHIP, myownership);
+
+                    getContentResolver().insert(BookProvider.URI_BOOKS, values_book);
                 }
                 // update a record
                 else {
-                    Uri uri = Uri.parse(BookProvider.URI_BOOKS + "/" + id);
-                    getContentResolver().update(uri, values, null, null);
+                    finish();
                 }
                 finish();
                 break;
@@ -234,26 +153,27 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
     private void loadBookInfo(){
 
         String[] projection = {
-                BooksTable.KEY_TITLE,
-                BooksTable.KEY_AUTHOR_ID,
-                BooksTable.KEY_ISBN,                BooksTable.KEY_PUBLISHER,
-                BooksTable.KEY_NPAGES,
-                BooksTable.KEY_NVOLUME,
-                BooksTable.KEY_GENRE,
-                BooksTable.KEY_OWNERSHIP};
-        Uri uri = Uri.parse(BookProvider.URI_BOOKS + "/" + id);
+                BooksTable.VIEWKEY_TITLE,
+                BooksTable.VIEWKEY_AUTHOR,
+                BooksTable.VIEWKEY_ISBN,
+                BooksTable.VIEWKEY_PUBLISHER,
+                BooksTable.VIEWKEY_NPAGES,
+                BooksTable.VIEWKEY_NVOLUME,
+                BooksTable.VIEWKEY_GENRE,
+                BooksTable.VIEWKEY_OWNERSHIP};
+        Uri uri = Uri.withAppendedPath(BookProvider.URI_BOOKS, "/" + id);
         Cursor cursor = getContentResolver().query(uri, projection, null, null,
                 null);
         if (cursor != null) {
             cursor.moveToFirst();
-            String myTitle = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_TITLE));
-            String myAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_AUTHOR_ID));
-            String myIsbn = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_ISBN));
-            String myPublisher = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_PUBLISHER));
-            String myNPages = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_NPAGES));
-            String myNVolume = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_NVOLUME));
-            String myGenre = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_GENRE));
-            String myOwnership = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.KEY_OWNERSHIP));
+            String myTitle = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_TITLE));
+            String myAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_AUTHOR));
+            String myIsbn = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_ISBN));
+            String myPublisher = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_PUBLISHER));
+            String myNPages = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_NPAGES));
+            String myNVolume = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_NVOLUME));
+            String myGenre = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_GENRE));
+            String myOwnership = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_OWNERSHIP));
             title.setText(myTitle);
             author.setText(myAuthor);
             isbn.setText(myIsbn);
@@ -262,6 +182,8 @@ public class BookEditActivity extends Activity implements OnClickListener, Loade
             nVolume.setText(myNVolume);
             genre.setText(myGenre);
             ownership.setText(myOwnership);
+
+            cursor.close();
         }
 
 

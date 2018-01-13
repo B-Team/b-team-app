@@ -5,7 +5,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,6 +83,7 @@ public class SearchInContextFragment extends Fragment implements SearchListener{
                     mListener.onBookSelected(rowId);
                 } else {
                     //signal the search activity that a new context was selected
+                    /*
                     switch (searchCategory.getId()) {
                         case SearchCategory.CATEGORY_AUTHORS:
                             rowId = cursor.getInt(cursor.getColumnIndexOrThrow(AuthorsTable.KEY_ID));
@@ -99,10 +99,11 @@ public class SearchInContextFragment extends Fragment implements SearchListener{
                         default:
                             Log.e("SearchInContext", "Invalid category-id: " + searchCategory.getId());
                     }
+                    */
                 }
             }
         });
-        searchActivity.requestInitSearch();
+        //searchActivity.requestInitSearch();
         return view;
     }
 
@@ -130,7 +131,7 @@ public class SearchInContextFragment extends Fragment implements SearchListener{
         if (context instanceof SearchStartFragment.OnSearchStartFragmentInteractionListener) {
             mListener = (SearchInContextFragment.OnSearchInContextFragmentInteractionListener) context;
             searchActivity = (SearchActivity) context;
-            searchActivity.requestSearchResults(searchContext, this);
+            //searchActivity.requestSearchResults(searchContext, this);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnSearchStartFragmentInteractionListener");

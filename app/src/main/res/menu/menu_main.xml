@@ -4,6 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.b_team.b_team_app.MainActivity">
 
+    <item android:id="@+id/action_search_books"
+        android:icon="@drawable/ic_book_black_24dp"
+        android:title="Search Books"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/action_search_authors"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="Search Authors"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/action_search_test"
+        android:icon="@drawable/ic_star_black_24dp"
+        android:title="Search Test"
+        app:showAsAction="always" />
+
     <item android:id="@+id/action_search"
     android:icon="@drawable/ic_search_black_24dp"
     android:title="@string/action_search"

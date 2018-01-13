@@ -16,19 +16,19 @@ public class SearchCategory implements Serializable{
     }
 
     public int getName() {
-        return name;
+        return 0;
     }
 
     public int getIcon() {
-        return icon;
+        return 0;
     }
 
     public int getCountMessage() {
-        return countMessage;
+        return 0;
     }
 
     public boolean isAlwaysSingular() {
-        return alwaysSingular;
+        return false;
     }
 
 }

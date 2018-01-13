@@ -29,7 +29,7 @@ public class SearchStartFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search_start, container, false);
 
         gridView = (GridView) view.findViewById(R.id.categoryGridView);
-        gridView.setAdapter(new SearchCategoryAdapter(getContext(), R.layout.search_category_item, SearchCategory.CATEGORIES));
+        //gridView.setAdapter(new SearchCategoryAdapter(getContext(), R.layout.search_category_item, SearchCategory.CATEGORIES));
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -26,13 +26,11 @@
             android:layout_below="@+id/editText_title" android:layout_alignParentLeft="true"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <!--
         <EditText android:id="@+id/editText_author" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:inputType="text"
             android:layout_toRightOf="@+id/textView_author" android:layout_below="@+id/editText_title"
             android:layout_alignLeft="@id/editText_title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-        -->
 
         <!--Ideally the author edit text should show all authors previously used as a autocomplete list.
             For that to work we need AutoCompleteTextViews instead of EditText. Also the BookEditActivity class needs
@@ -40,12 +38,14 @@
             I haven't worked out yet how to use the BookProvider to get the required data, so we keep the EditTexts for now.
             -Moritz
         -->
+        <!--
         <AutoCompleteTextView android:id="@+id/editText_author"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:inputType="textNoSuggestions" android:completionThreshold="1"
             android:layout_toRightOf="@+id/textView_author" android:layout_below="@+id/editText_title"
             android:layout_alignLeft="@id/editText_title"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
+        -->
 
         <TextView android:id="@+id/textView_isbn" android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:text="@string/key_isbn"
