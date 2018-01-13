@@ -86,7 +86,12 @@ public class BookProvider extends ContentProvider{
     @Override
     public boolean onCreate() {
         dbHelper = new DatabaseHelper(getContext());
+
+        //This is not how it is supposed to be done.
+        //The onCreate() method is normally called when the first instance of the db is created through getWritableDatabase().
+        //For some reason only the books table gets created though, so this is just a temporary workaround 'til I have that fixed.
         dbHelper.onCreate(dbHelper.getWritableDatabase());
+
         return false;
     }
 
@@ -103,33 +108,32 @@ public class BookProvider extends ContentProvider{
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         long id;
-        //TODO: Proper insert of new books (e.g. detect existing authors etc)
         switch (uriMatcher.match(uri)) {
             case BOOK:
-                String author = (String) values.get(BooksTable.VIEWKEY_AUTHOR);
+                //Insert or get id of author, publisher and genre
+                long author_id = insertAuthorIfNotExists((String) values.get(BooksTable.VIEWKEY_AUTHOR));
                 values.remove(BooksTable.VIEWKEY_AUTHOR);
-                String publisher = (String) values.get(BooksTable.VIEWKEY_PUBLISHER);
+                long publisher_id = insertPublisherIfNotExists((String) values.get(BooksTable.VIEWKEY_PUBLISHER));
                 values.remove(BooksTable.VIEWKEY_PUBLISHER);
-                String genre = (String) values.get(BooksTable.VIEWKEY_GENRE);
+                long genre_id = insertGenreIfNotExists((String) values.get(BooksTable.VIEWKEY_GENRE));
                 values.remove(BooksTable.VIEWKEY_GENRE);
-                ContentValues values_author = new ContentValues();
-                values_author.put(AuthorsTable.KEY_NAME, author);
-                ContentValues values_publisher = new ContentValues();
-                values_publisher.put(PublishersTable.KEY_NAME, publisher);
-                ContentValues values_genre = new ContentValues();
-                values_genre.put(GenresTable.KEY_NAME, genre);
-                long author_id = db.insert(AuthorsTable.TABLE_NAME, null, values_author);
-                long publisher_id = db.insert(PublishersTable.TABLE_NAME, null, values_publisher);
-                long genre_id = db.insert(GenresTable.TABLE_NAME, null, values_genre);
+
+                //Add id of publisher to book content values
                 values.put(BooksTable.KEY_PUBLISHER_ID, publisher_id);
+
+                //Insert book
                 id = db.insert(BooksTable.TABLE_NAME, null, values);
+
+                //Connect book and author via insert in booksauthors table
                 ContentValues values_booksauthors = new ContentValues();
                 values_booksauthors.put(BooksAuthorsTable.KEY_BOOK_ID, id);
                 values_booksauthors.put(BooksAuthorsTable.KEY_AUTHOR_ID, author_id);
+                db.insert(BooksAuthorsTable.TABLE_NAME, null, values_booksauthors);
+
+                //Connect book and genre via insert in booksgenres table
                 ContentValues values_booksgenres = new ContentValues();
                 values_booksgenres.put(BooksGenresTable.KEY_BOOK_ID, id);
                 values_booksgenres.put(BooksGenresTable.KEY_GENRE_ID, genre_id);
-                db.insert(BooksAuthorsTable.TABLE_NAME, null, values_booksauthors);
                 db.insert(BooksGenresTable.TABLE_NAME, null, values_booksgenres);
                 break;
             case AUTHOR:
@@ -150,6 +154,42 @@ public class BookProvider extends ContentProvider{
 
         getContext().getContentResolver().notifyChange(uri, null);
         return Uri.parse(uri + "/" + id);
+    }
+
+    private long insertAuthorIfNotExists(String name) {
+        Cursor cursor = query(Uri.withAppendedPath(URI_AUTHORS,PATH_SEARCH_FILTER + AuthorsTable.KEY_NAME + "/" + name), new String[]{AuthorsTable.KEY_ID}, null, null, null);
+        if (cursor.getCount() == 0) {
+            ContentValues values = new ContentValues();
+            values.put(AuthorsTable.KEY_NAME, name);
+            return Long.parseLong(insert(URI_AUTHORS, values).getLastPathSegment());
+        } else {
+            cursor.moveToFirst();
+            return cursor.getLong(0);
+        }
+    }
+
+    private long insertGenreIfNotExists(String name) {
+        Cursor cursor = query(Uri.withAppendedPath(URI_GENRES,PATH_SEARCH_FILTER + GenresTable.KEY_NAME + "/" + name), new String[]{GenresTable.KEY_ID}, null, null, null);
+        if (cursor.getCount() == 0) {
+            ContentValues values = new ContentValues();
+            values.put(GenresTable.KEY_NAME, name);
+            return Long.parseLong(insert(URI_GENRES, values).getLastPathSegment());
+        } else {
+            cursor.moveToFirst();
+            return cursor.getLong(0);
+        }
+    }
+
+    private long insertPublisherIfNotExists(String name) {
+        Cursor cursor = query(Uri.withAppendedPath(URI_PUBLISHERS,PATH_SEARCH_FILTER + PublishersTable.KEY_NAME + "/" + name), new String[]{PublishersTable.KEY_ID}, null, null, null);
+        if (cursor.getCount() == 0) {
+            ContentValues values = new ContentValues();
+            values.put(PublishersTable.KEY_NAME, name);
+            return Long.parseLong(insert(URI_PUBLISHERS, values).getLastPathSegment());
+        } else {
+            cursor.moveToFirst();
+            return cursor.getLong(0);
+        }
     }
 
     @Override
@@ -183,7 +223,7 @@ public class BookProvider extends ContentProvider{
                 throw new UnsupportedOperationException("filter in all fields is not implemented");
             case AUTHORS_SEARCH_FILTER_FIELD:
                 queryBuilder.setTables(AuthorsTable.TABLE_NAME);
-                queryBuilder.appendWhere(uri.getPathSegments().get(1) + " LIKE '%" + uri.getPathSegments().get(2) + "%'");
+                queryBuilder.appendWhere(uri.getPathSegments().get(2) + " LIKE '%" + uri.getPathSegments().get(3) + "%'");
                 break;
             case PUBLISHER_ID:
                 queryBuilder.setTables(PublishersTable.TABLE_NAME);
@@ -196,7 +236,7 @@ public class BookProvider extends ContentProvider{
                 throw new UnsupportedOperationException("filter in all fields is not implemented");
             case PUBLISHERS_SEARCH_FILTER_FIELD:
                 queryBuilder.setTables(PublishersTable.TABLE_NAME);
-                queryBuilder.appendWhere(uri.getPathSegments().get(1) + " LIKE '%" + uri.getPathSegments().get(2) + "%'");
+                queryBuilder.appendWhere(uri.getPathSegments().get(2) + " LIKE '%" + uri.getPathSegments().get(3) + "%'");
                 break;
             case GENRE_ID:
                 queryBuilder.setTables(GenresTable.TABLE_NAME);
@@ -209,7 +249,7 @@ public class BookProvider extends ContentProvider{
                 throw new UnsupportedOperationException("filter in all fields is not implemented");
             case GENRES_SEARCH_FILTER_FIELD:
                 queryBuilder.setTables(GenresTable.TABLE_NAME);
-                queryBuilder.appendWhere(uri.getPathSegments().get(1) + " LIKE '%" + uri.getPathSegments().get(2) + "%'");
+                queryBuilder.appendWhere(uri.getPathSegments().get(2) + " LIKE '%" + uri.getPathSegments().get(3) + "%'");
                 break;
             case WISH_ID:
                 queryBuilder.setTables(WishlistTable.TABLE_NAME);
@@ -222,7 +262,7 @@ public class BookProvider extends ContentProvider{
                 throw new UnsupportedOperationException("filter in all fields is not implemented");
             case WISHLIST_SEARCH_FILTER_FIELD:
                 queryBuilder.setTables(WishlistTable.TABLE_NAME);
-                queryBuilder.appendWhere(uri.getPathSegments().get(1) + " LIKE '%" + uri.getPathSegments().get(2) + "%'");
+                queryBuilder.appendWhere(uri.getPathSegments().get(2) + " LIKE '%" + uri.getPathSegments().get(3) + "%'");
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -240,6 +280,8 @@ public class BookProvider extends ContentProvider{
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         switch (uriMatcher.match(uri)) {
             case BOOK_ID:
+                //TODO: Proper updating of connected tables
+                //TODO: Open dialog for user to select: keep or delete old field if in connected table (e.g. author)
                 selection = BooksTable.KEY_ID + "=" + uri.getPathSegments().get(1);
                 db.update(BooksTable.TABLE_NAME, values, selection, selectionArgs);
                 break;
