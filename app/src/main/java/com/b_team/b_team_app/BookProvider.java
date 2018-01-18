@@ -4,7 +4,6 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -102,27 +101,29 @@ public class BookProvider extends ContentProvider{
         throw new UnsupportedOperationException("getType is not implemented :(");
     }
 
+    //TODO: Escape every text input
+
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        long id;
+        int id;
         switch (uriMatcher.match(uri)) {
             case BOOK:
                 //Insert or get id of author, publisher and genre
-                long author_id = insertAuthorIfNotExists((String) values.get(BooksTable.VIEWKEY_AUTHOR));
+                int author_id = insertAuthorIfNotExists((String) values.get(BooksTable.VIEWKEY_AUTHOR));
                 values.remove(BooksTable.VIEWKEY_AUTHOR);
-                long publisher_id = insertPublisherIfNotExists((String) values.get(BooksTable.VIEWKEY_PUBLISHER));
+                int publisher_id = insertPublisherIfNotExists((String) values.get(BooksTable.VIEWKEY_PUBLISHER));
                 values.remove(BooksTable.VIEWKEY_PUBLISHER);
-                long genre_id = insertGenreIfNotExists((String) values.get(BooksTable.VIEWKEY_GENRE));
+                int genre_id = insertGenreIfNotExists((String) values.get(BooksTable.VIEWKEY_GENRE));
                 values.remove(BooksTable.VIEWKEY_GENRE);
 
                 //Add id of publisher to book content values
                 values.put(BooksTable.KEY_PUBLISHER_ID, publisher_id);
 
                 //Insert book
-                id = db.insert(BooksTable.TABLE_NAME, null, values);
+                id = (int) db.insert(BooksTable.TABLE_NAME, null, values);
 
                 //Connect book and author via insert in booksauthors table
                 ContentValues values_booksauthors = new ContentValues();
@@ -137,16 +138,16 @@ public class BookProvider extends ContentProvider{
                 db.insert(BooksGenresTable.TABLE_NAME, null, values_booksgenres);
                 break;
             case AUTHOR:
-                id = db.insert(AuthorsTable.TABLE_NAME, null, values);
+                id = (int) db.insert(AuthorsTable.TABLE_NAME, null, values);
                 break;
             case PUBLISHER:
-                id = db.insert(PublishersTable.TABLE_NAME, null, values);
+                id = (int) db.insert(PublishersTable.TABLE_NAME, null, values);
                 break;
             case GENRE:
-                id = db.insert(GenresTable.TABLE_NAME, null, values);
+                id = (int) db.insert(GenresTable.TABLE_NAME, null, values);
                 break;
             case WISH:
-                id = db.insert(WishlistTable.TABLE_NAME, null, values);
+                id = (int) db.insert(WishlistTable.TABLE_NAME, null, values);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -156,39 +157,60 @@ public class BookProvider extends ContentProvider{
         return Uri.parse(uri + "/" + id);
     }
 
-    private long insertAuthorIfNotExists(String name) {
-        Cursor cursor = query(Uri.withAppendedPath(URI_AUTHORS,PATH_SEARCH_FILTER + AuthorsTable.KEY_NAME + "/" + name), new String[]{AuthorsTable.KEY_ID}, null, null, null);
+    private int insertAuthorIfNotExists(String name) {
+        Cursor cursor = query(Uri.withAppendedPath(URI_AUTHORS,PATH_SEARCH_FILTER + AuthorsTable.KEY_NAME + "/" + name), new String[]{AuthorsTable.KEY_ID, AuthorsTable.KEY_NBOOKS}, null, null, null);
         if (cursor.getCount() == 0) {
             ContentValues values = new ContentValues();
             values.put(AuthorsTable.KEY_NAME, name);
-            return Long.parseLong(insert(URI_AUTHORS, values).getLastPathSegment());
+            //Set book count for this author to one
+            values.put(AuthorsTable.KEY_NBOOKS, 1);
+            return Integer.parseInt(insert(URI_AUTHORS, values).getLastPathSegment());
         } else {
             cursor.moveToFirst();
-            return cursor.getLong(0);
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(AuthorsTable.KEY_ID));
+            ContentValues values = new ContentValues();
+            //Increase book count for this author by one
+            values.put(AuthorsTable.KEY_NBOOKS, cursor.getInt(cursor.getColumnIndexOrThrow(AuthorsTable.KEY_NBOOKS)) + 1);
+            update(Uri.withAppendedPath(URI_AUTHORS, "/" + id), values, null, null);
+            return id;
         }
     }
 
-    private long insertGenreIfNotExists(String name) {
-        Cursor cursor = query(Uri.withAppendedPath(URI_GENRES,PATH_SEARCH_FILTER + GenresTable.KEY_NAME + "/" + name), new String[]{GenresTable.KEY_ID}, null, null, null);
+    private int insertGenreIfNotExists(String name) {
+        Cursor cursor = query(Uri.withAppendedPath(URI_GENRES,PATH_SEARCH_FILTER + GenresTable.KEY_NAME + "/" + name), new String[]{GenresTable.KEY_ID, GenresTable.KEY_NBOOKS}, null, null, null);
         if (cursor.getCount() == 0) {
             ContentValues values = new ContentValues();
             values.put(GenresTable.KEY_NAME, name);
-            return Long.parseLong(insert(URI_GENRES, values).getLastPathSegment());
+            //Set book count for this genre to one
+            values.put(AuthorsTable.KEY_NBOOKS, 1);
+            return Integer.parseInt(insert(URI_GENRES, values).getLastPathSegment());
         } else {
             cursor.moveToFirst();
-            return cursor.getLong(0);
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(GenresTable.KEY_ID));
+            ContentValues values = new ContentValues();
+            //Increase book count for this genre by one
+            values.put(GenresTable.KEY_NBOOKS, cursor.getInt(cursor.getColumnIndexOrThrow(GenresTable.KEY_NBOOKS)) + 1);
+            update(Uri.withAppendedPath(URI_GENRES, "/" + id), values, null, null);
+            return id;
         }
     }
 
-    private long insertPublisherIfNotExists(String name) {
-        Cursor cursor = query(Uri.withAppendedPath(URI_PUBLISHERS,PATH_SEARCH_FILTER + PublishersTable.KEY_NAME + "/" + name), new String[]{PublishersTable.KEY_ID}, null, null, null);
+    private int insertPublisherIfNotExists(String name) {
+        Cursor cursor = query(Uri.withAppendedPath(URI_PUBLISHERS,PATH_SEARCH_FILTER + PublishersTable.KEY_NAME + "/" + name), new String[]{PublishersTable.KEY_ID, PublishersTable.KEY_NBOOKS}, null, null, null);
         if (cursor.getCount() == 0) {
             ContentValues values = new ContentValues();
             values.put(PublishersTable.KEY_NAME, name);
-            return Long.parseLong(insert(URI_PUBLISHERS, values).getLastPathSegment());
+            //Set book count for this publisher to one
+            values.put(PublishersTable.KEY_NBOOKS, 1);
+            return Integer.parseInt(insert(URI_PUBLISHERS, values).getLastPathSegment());
         } else {
             cursor.moveToFirst();
-            return cursor.getLong(0);
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(PublishersTable.KEY_ID));
+            ContentValues values = new ContentValues();
+            //Increase book count for this genre by one
+            values.put(GenresTable.KEY_NBOOKS, cursor.getInt(cursor.getColumnIndexOrThrow(PublishersTable.KEY_NBOOKS)) + 1);
+            update(Uri.withAppendedPath(URI_PUBLISHERS, "/" + id), values, null, null);
+            return id;
         }
     }
 
@@ -201,7 +223,7 @@ public class BookProvider extends ContentProvider{
         switch (uriMatcher.match(uri)) {
             case BOOK_ID:
                 queryBuilder.setTables(BooksTable.VIEW_NAME);
-                selection = BooksTable.VIEWKEY_ID + "=" + uri.getPathSegments().get(1);
+                queryBuilder.appendWhere(BooksTable.VIEWKEY_ID + "=" + uri.getPathSegments().get(1));
                 break;
             case BOOKS_SEARCH_ALL:
                 queryBuilder.setTables(BooksTable.VIEW_NAME);
@@ -214,7 +236,7 @@ public class BookProvider extends ContentProvider{
                 break;
             case AUTHOR_ID:
                 queryBuilder.setTables(AuthorsTable.TABLE_NAME);
-                selection = AuthorsTable.KEY_ID + "=" + uri.getPathSegments().get(1);
+                queryBuilder.appendWhere(AuthorsTable.KEY_ID + "=" + uri.getPathSegments().get(1));
                 break;
             case AUTHORS_SEARCH_ALL:
                 queryBuilder.setTables(AuthorsTable.TABLE_NAME);
@@ -227,7 +249,7 @@ public class BookProvider extends ContentProvider{
                 break;
             case PUBLISHER_ID:
                 queryBuilder.setTables(PublishersTable.TABLE_NAME);
-                selection = PublishersTable.KEY_ID + "=" + uri.getPathSegments().get(1);
+                queryBuilder.appendWhere(PublishersTable.KEY_ID + "=" + uri.getPathSegments().get(1));
                 break;
             case PUBLISHERS_SEARCH_ALL:
                 queryBuilder.setTables(PublishersTable.TABLE_NAME);
@@ -240,7 +262,7 @@ public class BookProvider extends ContentProvider{
                 break;
             case GENRE_ID:
                 queryBuilder.setTables(GenresTable.TABLE_NAME);
-                selection = GenresTable.KEY_ID + "=" + uri.getPathSegments().get(1);
+                queryBuilder.appendWhere(GenresTable.KEY_ID + "=" + uri.getPathSegments().get(1));
                 break;
             case GENRES_SEARCH_ALL:
                 queryBuilder.setTables(GenresTable.TABLE_NAME);
@@ -252,25 +274,26 @@ public class BookProvider extends ContentProvider{
                 queryBuilder.appendWhere(uri.getPathSegments().get(2) + " LIKE '%" + uri.getPathSegments().get(3) + "%'");
                 break;
             case WISH_ID:
-                queryBuilder.setTables(WishlistTable.TABLE_NAME);
-                selection = WishlistTable.KEY_ID + "=" + uri.getPathSegments().get(1);
+                queryBuilder.setTables(WishlistTable.VIEW_NAME);
+                queryBuilder.appendWhere(WishlistTable.VIEWKEY_ID + "=" + uri.getPathSegments().get(1));
                 break;
             case WISHLIST_SEARCH_ALL:
-                queryBuilder.setTables(WishlistTable.TABLE_NAME);
+                queryBuilder.setTables(WishlistTable.VIEW_NAME);
                 break;
             case WISHLIST_SEARCH_FILTER:
                 throw new UnsupportedOperationException("filter in all fields is not implemented");
             case WISHLIST_SEARCH_FILTER_FIELD:
-                queryBuilder.setTables(WishlistTable.TABLE_NAME);
+                queryBuilder.setTables(WishlistTable.VIEW_NAME);
                 queryBuilder.appendWhere(uri.getPathSegments().get(2) + " LIKE '%" + uri.getPathSegments().get(3) + "%'");
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
-
+        if (selection != null) {
+            Log.d("Selection", "not null");
+        }
         Cursor cursor = queryBuilder.query(db, projection, selection,
                 selectionArgs, null, null, sortOrder);
-        Log.d("SearchResult", DatabaseUtils.dumpCursorToString(cursor));
         return cursor;
 
     }
@@ -286,20 +309,20 @@ public class BookProvider extends ContentProvider{
                 db.update(BooksTable.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case AUTHOR_ID:
-                selection = BooksTable.KEY_ID + "=" + uri.getPathSegments().get(1);
-                db.update(BooksTable.TABLE_NAME, values, selection, selectionArgs);
+                selection = AuthorsTable.KEY_ID + "=" + uri.getPathSegments().get(1);
+                db.update(AuthorsTable.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case PUBLISHER_ID:
-                selection = BooksTable.KEY_ID + "=" + uri.getPathSegments().get(1);
-                db.update(BooksTable.TABLE_NAME, values, selection, selectionArgs);
+                selection = PublishersTable.KEY_ID + "=" + uri.getPathSegments().get(1);
+                db.update(PublishersTable.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case GENRE_ID:
-                selection = BooksTable.KEY_ID + "=" + uri.getPathSegments().get(1);
-                db.update(BooksTable.TABLE_NAME, values, selection, selectionArgs);
+                selection = GenresTable.KEY_ID + "=" + uri.getPathSegments().get(1);
+                db.update(GenresTable.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case WISH_ID:
-                selection = BooksTable.KEY_ID + "=" + uri.getPathSegments().get(1);
-                db.update(BooksTable.TABLE_NAME, values, selection, selectionArgs);
+                selection = WishlistTable.KEY_ID + "=" + uri.getPathSegments().get(1);
+                db.update(WishlistTable.TABLE_NAME, values, selection, selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);

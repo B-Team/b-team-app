@@ -16,7 +16,7 @@ public class BookEditActivity extends Activity implements OnClickListener{
 
     private Button save, delete, cancel;
     private String mode;
-    private EditText title, author, isbn, publisher, nPages, nVolume, genre, ownership;
+    private EditText title, author, isbn, publisher, nPages, nVolume, genre, ownership, rating;
     private String id;
     private SimpleCursorAdapter dataAdapter;
 
@@ -48,6 +48,7 @@ public class BookEditActivity extends Activity implements OnClickListener{
         nVolume = (EditText) findViewById(R.id.editText_nVolume);
         genre = (EditText) findViewById(R.id.editText_genre);
         ownership = (EditText) findViewById(R.id.editText_ownership);
+        rating = (EditText) findViewById(R.id.editText_rating);
 
         // if in add mode disable the delete option
         if(mode.trim().equalsIgnoreCase("add")){
@@ -78,7 +79,9 @@ public class BookEditActivity extends Activity implements OnClickListener{
                 String mynVolume = nVolume.getText().toString();
                 String mygenre = genre.getText().toString();
                 String myownership = ownership.getText().toString();
+                String myRating = rating.getText().toString();
 
+                //TODO: Default values instead of toast
                 // check for blanks
                 if(mytitle.trim().equalsIgnoreCase("")){
                     Toast.makeText(getBaseContext(), "Please ENTER title", Toast.LENGTH_LONG).show();
@@ -112,6 +115,10 @@ public class BookEditActivity extends Activity implements OnClickListener{
                     Toast.makeText(getBaseContext(), "Please ENTER ownership", Toast.LENGTH_LONG).show();
                     return;
                 }
+                if(myRating.trim().equalsIgnoreCase("")){
+                    Toast.makeText(getBaseContext(), "Please ENTER rating", Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 // insert a record
                 if(mode.trim().equalsIgnoreCase("add")){
@@ -124,6 +131,7 @@ public class BookEditActivity extends Activity implements OnClickListener{
                     values_book.put(BooksTable.KEY_NPAGES, mynPages);
                     values_book.put(BooksTable.KEY_NVOLUME, mynVolume);
                     values_book.put(BooksTable.KEY_OWNERSHIP, myownership);
+                    values_book.put(BooksTable.KEY_RATING, myRating);
 
                     getContentResolver().insert(BookProvider.URI_BOOKS, values_book);
                 }
@@ -160,7 +168,8 @@ public class BookEditActivity extends Activity implements OnClickListener{
                 BooksTable.VIEWKEY_NPAGES,
                 BooksTable.VIEWKEY_NVOLUME,
                 BooksTable.VIEWKEY_GENRE,
-                BooksTable.VIEWKEY_OWNERSHIP};
+                BooksTable.VIEWKEY_OWNERSHIP,
+                BooksTable.VIEWKEY_RATING};
         Uri uri = Uri.withAppendedPath(BookProvider.URI_BOOKS, "/" + id);
         Cursor cursor = getContentResolver().query(uri, projection, null, null,
                 null);
@@ -174,6 +183,7 @@ public class BookEditActivity extends Activity implements OnClickListener{
             String myNVolume = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_NVOLUME));
             String myGenre = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_GENRE));
             String myOwnership = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_OWNERSHIP));
+            String myRating = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_RATING));
             title.setText(myTitle);
             author.setText(myAuthor);
             isbn.setText(myIsbn);
@@ -182,6 +192,7 @@ public class BookEditActivity extends Activity implements OnClickListener{
             nVolume.setText(myNVolume);
             genre.setText(myGenre);
             ownership.setText(myOwnership);
+            rating.setText(myRating);
 
             cursor.close();
         }

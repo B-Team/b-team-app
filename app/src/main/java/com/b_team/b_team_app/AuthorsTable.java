@@ -7,6 +7,7 @@ public class AuthorsTable {
 
     public static final String KEY_ID = "_id";
     public static final String KEY_NAME = "name";
+    public static final String KEY_NBOOKS = "nbooks";
 
     private static final String LOG_TAG = "AuthorsTable";
     public static final String TABLE_NAME = "authors";
@@ -14,7 +15,8 @@ public class AuthorsTable {
     private static final String DATABASE_CREATE =
             "CREATE TABLE if not exists " + TABLE_NAME + " (" +
                     KEY_ID + " integer PRIMARY KEY autoincrement," +
-                    KEY_NAME + ");";
+                    KEY_NAME + "," +
+                    KEY_NBOOKS + ");";
 
     public static void onCreate(SQLiteDatabase db) {
         Log.w(LOG_TAG, DATABASE_CREATE);

@@ -1,10 +1,11 @@
 package com.b_team.b_team_app;
 
 import android.content.Context;
-import android.content.Loader;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,7 @@ public class SearchInContextFragment extends Fragment implements SearchListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("SearchInContextFragment", "onCreateView()");
         View view = inflater.inflate(R.layout.fragment_search_in_context, container, false);
 
         listView = (ListView) view.findViewById(R.id.searchResultList);
@@ -51,6 +53,7 @@ public class SearchInContextFragment extends Fragment implements SearchListener{
 
         Bundle args = getArguments();
         searchContext = (SearchContext) args.getSerializable("SearchContext");
+        Log.d("searchContext", "Category: "+searchContext.getSearchCategory().getId()+"; Name: "+searchContext.getContextName()+"; Single: "+searchContext.isSingleContext());
         searchCategory = searchContext.getSearchCategory();
         tv_categoryName.setText(searchCategory.getName());
         tv_contextName.setText(searchContext.getContextName());
@@ -75,6 +78,7 @@ public class SearchInContextFragment extends Fragment implements SearchListener{
 
                 Cursor cursor = (Cursor) listView.getItemAtPosition(position);
                 int rowId;
+                SearchContext newContext;
 
                 //Check if we are in a category or a single context (e.g. one specific author)
                 if (searchContext.isSingleContext()) {
@@ -83,55 +87,48 @@ public class SearchInContextFragment extends Fragment implements SearchListener{
                     mListener.onBookSelected(rowId);
                 } else {
                     //signal the search activity that a new context was selected
-                    /*
                     switch (searchCategory.getId()) {
-                        case SearchCategory.CATEGORY_AUTHORS:
+                        case SearchCategories.CATEGORY_AUTHORS:
                             rowId = cursor.getInt(cursor.getColumnIndexOrThrow(AuthorsTable.KEY_ID));
-                            SearchContext newContext = new SearchContext(searchCategory, cursor.getString(cursor.getColumnIndexOrThrow(AuthorsTable.KEY_NAME)), true);
+                            newContext = new SearchContext(searchCategory, cursor.getString(cursor.getColumnIndexOrThrow(AuthorsTable.KEY_NAME)), true);
                             mListener.onNewContextSelected(newContext);
                             break;
-                        case SearchCategory.CATEGORY_PUBLISHERS:
-                            //TODO: Get id from PublisherTable
+                        case SearchCategories.CATEGORY_PUBLISHERS:
+                            rowId = cursor.getInt(cursor.getColumnIndexOrThrow(PublishersTable.KEY_ID));
+                            newContext = new SearchContext(searchCategory, cursor.getString(cursor.getColumnIndexOrThrow(PublishersTable.KEY_NAME)), true);
+                            mListener.onNewContextSelected(newContext);
                             break;
-                        case SearchCategory.CATEGORY_GENRES:
-                            //TODO: Get id from GenresTable
+                        case SearchCategories.CATEGORY_GENRES:
+                            rowId = cursor.getInt(cursor.getColumnIndexOrThrow(GenresTable.KEY_ID));
+                            newContext = new SearchContext(searchCategory, cursor.getString(cursor.getColumnIndexOrThrow(GenresTable.KEY_NAME)), true);
+                            mListener.onNewContextSelected(newContext);
                             break;
                         default:
                             Log.e("SearchInContext", "Invalid category-id: " + searchCategory.getId());
                     }
-                    */
                 }
             }
         });
-        //searchActivity.requestInitSearch();
+        if (!searchActivity.requestEmptySearch()) {
+            throw new IllegalStateException("Search text not empty");
+        }
         return view;
-    }
-
-    public void onParentCountFinished(int number) {
-        //TODO: Display proper context info
-        tv_contextInfo.setText(String.format("%1d %2s", number, getString(searchCategory.getCountMessage())));
-    }
-
-    public void onParentLoadFinished(Loader<Cursor> loader, Cursor data) {
-        dataAdapter.swapCursor(data);
     }
 
     @Override
     public void onSearchComplete(Cursor data) {
+        Log.d("SearchInContextFragment", "onSearchComplete()");
+        Log.d("data", DatabaseUtils.dumpCursorToString(data));
         dataAdapter.swapCursor(data);
-    }
-
-    public void onParentLoaderReset(Loader<Cursor> loader) {
-        dataAdapter.swapCursor(null);
     }
 
     @Override
     public void onAttach(Context context) {
+        Log.d("SearchInContextFragment", "onAttach()");
         super.onAttach(context);
         if (context instanceof SearchStartFragment.OnSearchStartFragmentInteractionListener) {
             mListener = (SearchInContextFragment.OnSearchInContextFragmentInteractionListener) context;
             searchActivity = (SearchActivity) context;
-            //searchActivity.requestSearchResults(searchContext, this);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnSearchStartFragmentInteractionListener");
@@ -140,6 +137,7 @@ public class SearchInContextFragment extends Fragment implements SearchListener{
 
     @Override
     public void onDetach() {
+        Log.d("SearchInContextFragment", "onDetach()");
         super.onDetach();
         mListener = null;
     }

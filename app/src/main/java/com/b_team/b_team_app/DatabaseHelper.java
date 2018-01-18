@@ -23,6 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         GenresTable.onCreate(db);
         BooksGenresTable.onCreate(db);
         PublishersTable.onCreate(db);
+        WishlistTable.onCreate(db);
 
     }
 
@@ -36,5 +37,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         GenresTable.onUpgrade(db, oldVersion, newVersion);
         BooksGenresTable.onUpgrade(db, oldVersion, newVersion);
         PublishersTable.onUpgrade(db, oldVersion, newVersion);
+        WishlistTable.onUpgrade(db, oldVersion, newVersion);
     }
 }

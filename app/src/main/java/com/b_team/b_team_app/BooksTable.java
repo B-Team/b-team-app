@@ -21,6 +21,7 @@ public class BooksTable {
     public static final String KEY_SHORTDESCRIPTION = "shortDescription";
     public static final String KEY_LONGDESCRIPTION = "longDescription";
     public static final String KEY_REVIEW = "review";
+    public static final String KEY_RATING = "rating";
     public static final String KEY_PRICE = "price";
     public static final String KEY_OWNERSHIP = "ownership";
     public static final String KEY_LASTEDIT = "lastEdit";
@@ -37,6 +38,7 @@ public class BooksTable {
     public static final String VIEWKEY_SHORTDESCRIPTION = KEY_SHORTDESCRIPTION;
     public static final String VIEWKEY_LONGDESCRIPTION = KEY_LONGDESCRIPTION;
     public static final String VIEWKEY_REVIEW = KEY_REVIEW;
+    public static final String VIEWKEY_RATING = KEY_RATING;
     public static final String VIEWKEY_PRICE = KEY_PRICE;
     public static final String VIEWKEY_OWNERSHIP = KEY_OWNERSHIP;
     public static final String VIEWKEY_LASTEDIT = KEY_LASTEDIT;
@@ -47,21 +49,22 @@ public class BooksTable {
 
     private static final String CREATE_BOOK_VIEW =
             "CREATE VIEW if not exists " + VIEW_NAME + " AS SELECT " +
-                    TABLE_NAME + "." + KEY_ID + "," +
-                    TABLE_NAME + "." + KEY_TITLE + "," +
+                    TABLE_NAME + "." + KEY_ID + " AS " + VIEWKEY_ID + "," +
+                    TABLE_NAME + "." + KEY_TITLE + " AS " + VIEWKEY_TITLE + "," +
                     AuthorsTable.TABLE_NAME + "." + AuthorsTable.KEY_NAME + " AS " + VIEWKEY_AUTHOR + "," +
-                    TABLE_NAME + "." + KEY_ISBN + "," +
+                    TABLE_NAME + "." + KEY_ISBN + " AS " + VIEWKEY_ISBN + "," +
                     PublishersTable.TABLE_NAME + "." + PublishersTable.KEY_NAME + " AS " + VIEWKEY_PUBLISHER + "," +
-                    TABLE_NAME + "." + KEY_PICTURES + "," +
-                    TABLE_NAME + "." + KEY_NPAGES + "," +
-                    TABLE_NAME + "." + KEY_NVOLUME + "," +
+                    TABLE_NAME + "." + KEY_PICTURES + " AS " + VIEWKEY_PICTURES + "," +
+                    TABLE_NAME + "." + KEY_NPAGES + " AS " + VIEWKEY_NPAGES + "," +
+                    TABLE_NAME + "." + KEY_NVOLUME + " AS " + VIEWKEY_NVOLUME + "," +
                     GenresTable.TABLE_NAME + "." + GenresTable.KEY_NAME + " AS " + VIEWKEY_GENRE + "," +
-                    TABLE_NAME + "." + KEY_SHORTDESCRIPTION + "," +
-                    TABLE_NAME + "." + KEY_LONGDESCRIPTION + "," +
-                    TABLE_NAME + "." + KEY_REVIEW + "," +
-                    TABLE_NAME + "." + KEY_PRICE + "," +
-                    TABLE_NAME + "." + KEY_OWNERSHIP + "," +
-                    TABLE_NAME + "." + KEY_LASTEDIT +
+                    TABLE_NAME + "." + KEY_SHORTDESCRIPTION + " AS " + VIEWKEY_SHORTDESCRIPTION + "," +
+                    TABLE_NAME + "." + KEY_LONGDESCRIPTION + " AS " + VIEWKEY_LONGDESCRIPTION + "," +
+                    TABLE_NAME + "." + KEY_REVIEW + " AS " + VIEWKEY_REVIEW + "," +
+                    TABLE_NAME + "." + KEY_RATING + " AS " + VIEWKEY_RATING + "," +
+                    TABLE_NAME + "." + KEY_PRICE + " AS " + VIEWKEY_PRICE + "," +
+                    TABLE_NAME + "." + KEY_OWNERSHIP + " AS " + VIEWKEY_OWNERSHIP + "," +
+                    TABLE_NAME + "." + KEY_LASTEDIT + " AS " + VIEWKEY_LASTEDIT +
                     " FROM " + TABLE_NAME +
                     " INNER JOIN " + BooksAuthorsTable.TABLE_NAME + " ON " + TABLE_NAME + "." + KEY_ID + " = " + BooksAuthorsTable.TABLE_NAME + "." + BooksAuthorsTable.KEY_BOOK_ID +
                     " INNER JOIN " + AuthorsTable.TABLE_NAME + " ON " + BooksAuthorsTable.TABLE_NAME + "." + BooksAuthorsTable.KEY_AUTHOR_ID + " = " + AuthorsTable.TABLE_NAME + "." + AuthorsTable.KEY_ID +
@@ -83,6 +86,7 @@ public class BooksTable {
                     KEY_SHORTDESCRIPTION + "," +
                     KEY_LONGDESCRIPTION + "," +
                     KEY_REVIEW + "," +
+                    KEY_RATING + "," +
                     KEY_PRICE + "," +
                     KEY_OWNERSHIP + "," +
                     KEY_LASTEDIT + ");";

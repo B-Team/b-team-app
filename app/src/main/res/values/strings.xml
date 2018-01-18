@@ -7,6 +7,7 @@
     <string name="action_up">Zurück</string>
     <string name="action_clear_search">Suche löschen</string>
     <string name="action_share">Share</string>
+    <string name="action_add_book">Buch hinzufügen</string>
 
     <!-- Database field names -->
     <string name="key_title">Titel</string>
@@ -17,6 +18,7 @@
     <string name="key_nVolume">Band</string>
     <string name="key_genre">Genre</string>
     <string name="key_ownership">Besitzstatus</string>
+    <string name="key_rating">Bewertung</string>
 
     <string name="book_details">Buch Details</string>
 

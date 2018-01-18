@@ -3,6 +3,7 @@ package com.b_team.b_team_app;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +27,11 @@ public class SearchStartFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("SearchStartFragment", "onCreateView()");
         View view = inflater.inflate(R.layout.fragment_search_start, container, false);
 
         gridView = (GridView) view.findViewById(R.id.categoryGridView);
-        //gridView.setAdapter(new SearchCategoryAdapter(getContext(), R.layout.search_category_item, SearchCategory.CATEGORIES));
+        gridView.setAdapter(new SearchCategoryAdapter(getContext(), R.layout.search_category_item, SearchCategories.CATEGORIES));
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -43,6 +45,7 @@ public class SearchStartFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
+        Log.d("SearchStartFragment", "onAttach()");
         super.onAttach(context);
         if (context instanceof OnSearchStartFragmentInteractionListener) {
             mListener = (OnSearchStartFragmentInteractionListener) context;
@@ -54,6 +57,7 @@ public class SearchStartFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        Log.d("SearchStartFragment", "onDetach()");
         super.onDetach();
         mListener = null;
     }
