@@ -12,6 +12,9 @@ import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class BookEditActivity extends Activity implements OnClickListener{
 
     private Button save, delete, cancel;
@@ -19,6 +22,7 @@ public class BookEditActivity extends Activity implements OnClickListener{
     private EditText title, author, isbn, publisher, nPages, nVolume, genre, ownership, rating;
     private String id;
     private SimpleCursorAdapter dataAdapter;
+    private Toast curToastMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,10 @@ public class BookEditActivity extends Activity implements OnClickListener{
             id = bundle.getString("rowId");
             loadBookInfo();
         }
+
+        //Initialise a Toast so curToastMessage is never null
+        curToastMessage = Toast.makeText(getBaseContext(), "", Toast.LENGTH_SHORT);
+        curToastMessage.cancel();
     }
 
     @Override
@@ -82,43 +90,115 @@ public class BookEditActivity extends Activity implements OnClickListener{
                 String myRating = rating.getText().toString();
 
                 //TODO: Default values instead of toast
-                // check for blanks
+                // check for blanks and invalid characters
                 if(mytitle.trim().equalsIgnoreCase("")){
-                    Toast.makeText(getBaseContext(), "Please ENTER title", Toast.LENGTH_LONG).show();
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_title)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                } else if (checkForInvalidChar(mytitle)) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_title)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
                     return;
                 }
+
                 if(myauthor.trim().equalsIgnoreCase("")){
-                    Toast.makeText(getBaseContext(), "Please ENTER author", Toast.LENGTH_LONG).show();
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_author)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                } else if (checkForInvalidChar(myauthor.trim())) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_author)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
                     return;
                 }
+
                 if(myisbn.trim().equalsIgnoreCase("")){
-                    Toast.makeText(getBaseContext(), "Please ENTER isbn", Toast.LENGTH_LONG).show();
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_isbn)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                } else if (checkForInvalidChar(myisbn)) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_isbn)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
                     return;
                 }
+
                 if(mypublisher.trim().equalsIgnoreCase("")){
-                    Toast.makeText(getBaseContext(), "Please ENTER publisher", Toast.LENGTH_LONG).show();
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_publisher)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                } else if (checkForInvalidChar(mypublisher.trim())) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_publisher)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
                     return;
                 }
+
                 if(mynPages.trim().equalsIgnoreCase("")){
-                    Toast.makeText(getBaseContext(), "Please ENTER nPages", Toast.LENGTH_LONG).show();
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_nPages)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                } else if (checkForInvalidChar(mynPages.trim())) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_nPages)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
                     return;
                 }
+
                 if(mynVolume.trim().equalsIgnoreCase("")){
-                    Toast.makeText(getBaseContext(), "Please ENTER nVolume", Toast.LENGTH_LONG).show();
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_nVolume)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                } else if (checkForInvalidChar(mynVolume.trim())) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_nVolume)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
                     return;
                 }
+
                 if(mygenre.trim().equalsIgnoreCase("")){
-                    Toast.makeText(getBaseContext(), "Please ENTER genre", Toast.LENGTH_LONG).show();
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_genre)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                } else if (checkForInvalidChar(mygenre.trim())) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_genre)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
                     return;
                 }
+
                 if(myownership.trim().equalsIgnoreCase("")){
-                    Toast.makeText(getBaseContext(), "Please ENTER ownership", Toast.LENGTH_LONG).show();
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_ownership)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                } else if (checkForInvalidChar(myownership.trim())) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_ownership)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
                     return;
                 }
+
                 if(myRating.trim().equalsIgnoreCase("")){
-                    Toast.makeText(getBaseContext(), "Please ENTER rating", Toast.LENGTH_LONG).show();
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_rating)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                } else if (checkForInvalidChar(myRating.trim())) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_rating)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
                     return;
                 }
+
 
                 // insert a record
                 if(mode.trim().equalsIgnoreCase("add")){
@@ -151,9 +231,19 @@ public class BookEditActivity extends Activity implements OnClickListener{
 
             case R.id.cancel:
                 // return to main activity
+                curToastMessage.cancel();
                 finish();
                 break;
         }
+    }
+
+    private boolean checkForInvalidChar(String string) {
+        Pattern regex = Pattern.compile("[A-Za-z0-9]");
+        Matcher matcher = regex.matcher(string);
+        if(matcher.find()) {
+            return false;
+        }
+        return true;
     }
 
     // based on the rowId get all information from the Content Provider

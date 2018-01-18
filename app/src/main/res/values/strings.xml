@@ -20,6 +20,10 @@
     <string name="key_ownership">Besitzstatus</string>
     <string name="key_rating">Bewertung</string>
 
+    <!-- Edit error messages -->
+    <string name="editError_emptyRequiredField">Bitte %1$s angeben</string>
+    <string name="editError_invalidChar">Unerlaubtes Zeichen in %1$s</string>
+
     <string name="book_details">Buch Details</string>
 
     <string name="cab_delete">Einträge löschen</string>

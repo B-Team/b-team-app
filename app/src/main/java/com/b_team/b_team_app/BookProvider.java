@@ -101,8 +101,6 @@ public class BookProvider extends ContentProvider{
         throw new UnsupportedOperationException("getType is not implemented :(");
     }
 
-    //TODO: Escape every text input
-
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
