@@ -2,6 +2,7 @@ package com.b_team.b_team_app;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -143,7 +144,11 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onBookSelected(int bookId) {
         Log.d("SearchActivity", "onBookSelected(bookId="+bookId+")");
-        //TODO: Open book info page
+        Intent bookInfo = new Intent(getBaseContext(), BookInfoActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putInt("bookId", bookId);
+        bookInfo.putExtras(bundle);
+        startActivity(bookInfo);
     }
 
     @Override

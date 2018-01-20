@@ -63,7 +63,17 @@
     <!-- Misc -->
     <string name="status_message_loading">Lädt&#8230;</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Book Info -->
+    <string name="bookinfo_isbnlabel">ISBN:</string>
+    <string name="bookinfo_genrelabel">Genre:</string>
+    <string name="bookinfo_ratinglabel">Persöhnliche Bewertung:</string>
+    <string name="bookinfo_noteslabel">Anmerkungen:</string>
+    <string name="bookinfo_pageslabel">Seiten</string>
+    <string name="bookinfo_volumelabel">Band:</string>
+    <string name="bookinfo_authorconjunction">von</string>
+    <string name="bookinfo_volumeconjunction">von</string>
+    <string name="bookinfo_publisherconjunction">Verlegt von:</string>
+
+    <string name="bookinfo_descriptionbutton">Beschreibung ausklappen</string>
 
 </resources>
