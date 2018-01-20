@@ -338,8 +338,8 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Event: The up button was clicked
      */
+    //TODO: Custom back stack behavior to restore search context and search receiver
     private void onUpClicked() {
-        //TODO: Add appropriate up navigation
         onBackPressed();
         //finish();
     }
@@ -371,6 +371,7 @@ public class SearchActivity extends AppCompatActivity implements LoaderManager.L
         searchText = etSearch.getText().toString();
         Log.d("searchText", searchText);
 
+        //TODO: Rethink this condition as it is never properly fulfilled
         if (currentSearchContext.getSearchCategory() == null) {
             Log.d("curSearchContext", "Category: null"+"; Name: "+currentSearchContext.getContextName()+"; Single: "+currentSearchContext.isSingleContext());
             //Show SearchStartFragment if empty and SearchInAllFragment otherwise
