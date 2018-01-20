@@ -2,19 +2,20 @@ package com.b_team.b_team_app;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 
 
-public class SearchInAllFragment extends Fragment {
+public class SearchInAllFragment extends Fragment implements SearchListener{
 
     private SearchInContextFragment.OnSearchInContextFragmentInteractionListener mListener;
-    private ListView listView;
+    private LinearLayout listContainer;
 
     public SearchInAllFragment() {
 
@@ -30,22 +31,16 @@ public class SearchInAllFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_search_in_all, container, false);
-
-        listView = (ListView) view.findViewById(R.id.searchResultList);
-        //TODO: Set adapter
-        //listView.setAdapter();
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
-
-                //TODO: Handle opening of book info or new context search
-            }
-        });
+        listContainer = (LinearLayout) getActivity().findViewById(R.id.listContainer);
 
         return view;
+    }
+
+    @Override
+    public void onSearchComplete(Cursor data) {
+        Log.d("SearchInContextFragment", "onSearchComplete()");
+        Log.d("data", DatabaseUtils.dumpCursorToString(data));
+
     }
 
     @Override
