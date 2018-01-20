@@ -70,10 +70,13 @@
     <string name="bookinfo_noteslabel">Anmerkungen:</string>
     <string name="bookinfo_pageslabel">Seiten</string>
     <string name="bookinfo_volumelabel">Band:</string>
+    <string name="bookinfo_descriptionlabel">Beschreibung</string>
     <string name="bookinfo_authorconjunction">von</string>
     <string name="bookinfo_volumeconjunction">von</string>
     <string name="bookinfo_publisherconjunction">Verlegt von:</string>
 
     <string name="bookinfo_descriptionbutton">Beschreibung ausklappen</string>
+
+    <string name="bookinfo_descriptionclose">Schließen</string>
 
 </resources>

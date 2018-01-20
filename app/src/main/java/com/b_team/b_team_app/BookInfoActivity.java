@@ -6,6 +6,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -55,6 +56,13 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
         tvNotes = (TextView) findViewById(R.id.textView_notes);
 
         bOpenDescription = (Button) findViewById(R.id.button_openDescription);
+        bOpenDescription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment dialog = BookDescriptionFragment.createBookDescriptionFragment(description);
+                dialog.show(getSupportFragmentManager(), "BookDescriptionFragment");
+            }
+        });
 
         ivBookCover = (ImageView) findViewById(R.id.imageView_bookCover);
         
@@ -108,6 +116,9 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
         tvBookType.setText("Hardcover");
         tvNotes.setText("--\n---\n----\n-----\n------\n    Dummy notes\n------\n-----\n----\n---\n--");
         ivBookCover.setImageResource(R.drawable.moers_prinzessin_insomnia);
+        description = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. \n" +
+                "\n" +
+                "Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. ";
     }
 
     private void setRatingStars(int rating) {
