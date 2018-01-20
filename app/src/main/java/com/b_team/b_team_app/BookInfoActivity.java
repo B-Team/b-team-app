@@ -223,6 +223,9 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
             case R.id.action_share:
                 //TODO: Implement share functionality
                 return true;
+            case R.id.action_edit:
+                //TODO: Open edit activity
+                return true;
             default:
                 //Action not recognized
                 //Let super handle it
