@@ -15,7 +15,7 @@ import android.widget.Toast;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BookEditActivity extends Activity implements OnClickListener{
+public class BookEditActivity extends Activity implements OnClickListener {
 
     private Button save, delete, cancel;
     private String mode;
@@ -24,10 +24,28 @@ public class BookEditActivity extends Activity implements OnClickListener{
     private SimpleCursorAdapter dataAdapter;
     private Toast curToastMessage;
 
+    //Ignore this. Dynamic scrolling would be nice but it doesn't work right now and we don't have time for it
+    //The ids of all the edit text fields that should affect the scroll when focused
+    /*
+    private static ArrayList<Integer> scrollFocusableFields = new ArrayList<>();
+    static {
+        scrollFocusableFields.add(R.id.editText_title);
+        scrollFocusableFields.add(R.id.editText_author);
+        scrollFocusableFields.add(R.id.editText_isbn);
+        scrollFocusableFields.add(R.id.editText_publisher);
+        scrollFocusableFields.add(R.id.editText_nPages);
+        scrollFocusableFields.add(R.id.editText_nVolume);
+        scrollFocusableFields.add(R.id.editText_genre);
+        scrollFocusableFields.add(R.id.editText_ownership);
+        scrollFocusableFields.add(R.id.editText_rating);
+    }
+    private int scrollBaseHeight;
+    */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.book_edit);
+        setContentView(R.layout.activity_book_edit);
 
         // get the values passed to the activity from the calling activity
         // determine the mode - add, update or delete
@@ -54,6 +72,45 @@ public class BookEditActivity extends Activity implements OnClickListener{
         ownership = (EditText) findViewById(R.id.editText_ownership);
         rating = (EditText) findViewById(R.id.editText_rating);
 
+        //Dynamic scrolling. Not done. Please ignore.
+        /*
+        scrollBaseHeight = findViewById(R.id.scrollContainer).getHeight();
+
+        View.OnFocusChangeListener listener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                Log.d("onFocusChange()", "hasFocus?: " + hasFocus);
+                final View currentView = v;
+                int currentId = v.getId();
+                if (scrollFocusableFields.contains(currentId)) {
+                    Log.d("onFocusChange()", currentId + " is inside array.");
+                    int spacing = 0;
+                    int currentIndex = scrollFocusableFields.indexOf(currentId);
+                    if (currentIndex < scrollFocusableFields.size() - 1) {
+                        Log.d("onFocusChange()", currentIndex + " is not last element.");
+                        for (int i=currentIndex; i>=0; i--) {
+                            spacing += findViewById(scrollFocusableFields.get(i)).getHeight();
+                        }
+                        Log.d("onFocusChange()", "spacing: " + spacing);
+                    }
+                    RelativeLayout scrollContainer = (RelativeLayout) findViewById(R.id.scrollContainer);
+                    scrollContainer.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, scrollBaseHeight + spacing));
+                    final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollViewEdit);
+                    scrollView.post(new Runnable() {
+                        public void run() {
+                            Log.d("onFocusChange()", "Post(): scroll to " + currentView.getBottom());
+                            scrollView.smoothScrollTo(0, currentView.getBottom());
+                        }
+                    });
+                }
+            }
+        };
+
+        for (int i=0; i<scrollFocusableFields.size(); i++) {
+            findViewById(scrollFocusableFields.get(i)).setOnFocusChangeListener(listener);
+        }
+        */
+
         // if in add mode disable the delete option
         if(mode.trim().equalsIgnoreCase("add")){
             delete.setEnabled(false);
@@ -74,6 +131,13 @@ public class BookEditActivity extends Activity implements OnClickListener{
     protected void onResume() {
         super.onResume();
     }
+
+    private boolean wasFocusMovementDown(View lastView, View currentView) {
+        if (lastView.getNextFocusDownId() == currentView.getId()) return true;
+        return false;
+    }
+
+    @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
