@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollViewEdit"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -211,37 +212,141 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </RelativeLayout>
-
-        <Button
-            android:id="@+id/save"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/readingStatuesBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/textBox"
-            android:layout_marginRight="21dp"
-            android:layout_marginTop="13dp"
+            android:layout_below="@id/textBox">
+
+            <Switch
+                android:id="@+id/switch_wantToRead"
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView_wantToRead"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:text="Möchte ich noch lesen:"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                app:layout_constraintEnd_toStartOf="@+id/switch_wantToRead"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Switch
+                android:id="@+id/switch_read"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView_wantToRead" />
+
+            <TextView
+                android:id="@+id/textView_read"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:text="Schon gelesen:"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                app:layout_constraintEnd_toStartOf="@+id/switch_read"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView_wantToRead" />
+
+            <Switch
+                android:id="@+id/switch_currentlyReading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView_read" />
+
+            <TextView
+                android:id="@+id/textView_currentlyReading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Lese ich gerade:"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                app:layout_constraintEnd_toStartOf="@+id/switch_currentlyReading"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView_read" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/layout_currentlyReadinBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintStart_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView_currentlyReading">
+
+                <TextView
+                    android:id="@+id/textView_currentPage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Aktuelle Seite:"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/editText_currentPage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintEnd_toStartOf="@id/textView_maxPage"
+                    app:layout_constraintStart_toEndOf="@id/textView_currentPage"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView_maxPage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="16dp"
+                    android:text="@string/bookedit_maxpage"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/editText_currentPage"
+                    android:scaleY="4"
+                    />
+
+
+            </android.support.constraint.ConstraintLayout>
+
+
+        </android.support.constraint.ConstraintLayout>
+
+        <Button android:id="@+id/save" style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" android:layout_below="@id/readingStatuesBox"
+            android:layout_marginRight="21dp" android:layout_marginTop="13dp"
             android:text="@string/button_save" />
 
-        <Button
-            android:id="@+id/delete"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/save"
-            android:layout_alignBottom="@+id/save"
-            android:layout_toLeftOf="@+id/save"
-            android:text="@string/button_delete" />
+        <Button android:id="@+id/delete" style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/save" android:layout_alignBottom="@+id/save"
+            android:layout_toLeftOf="@+id/save" android:text="@string/button_delete" />
 
-        <Button
-            android:id="@+id/cancel"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/save"
-            android:layout_alignBottom="@+id/save"
-            android:layout_alignParentLeft="true"
-            android:text="@string/button_cancel" />
+        <Button android:id="@+id/cancel" style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/save" android:layout_alignBottom="@+id/save"
+            android:layout_alignParentLeft="true" android:text="@string/button_cancel" />
 
     </RelativeLayout>
+
 </ScrollView>

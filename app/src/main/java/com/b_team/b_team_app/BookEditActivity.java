@@ -5,11 +5,18 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.regex.Matcher;
@@ -18,11 +25,17 @@ import java.util.regex.Pattern;
 public class BookEditActivity extends Activity implements OnClickListener {
 
     private Button save, delete, cancel;
+    private Switch switch_read, switch_currentlyReading, switch_wantToRead;
     private String mode;
-    private EditText title, author, isbn, publisher, nPages, nVolume, genre, ownership, rating;
+    private EditText title, author, isbn, publisher, nPages, nVolume, genre, ownership, rating, currentPage;
     private String id;
+    private TextView maxpage;
     private SimpleCursorAdapter dataAdapter;
+    private int readingstatus = -1;
     private Toast curToastMessage;
+    private ConstraintLayout layout_currentlyReadingBox;
+    private ProgressBar pb_readingstatus;
+
 
     //Ignore this. Dynamic scrolling would be nice but it doesn't work right now and we don't have time for it
     //The ids of all the edit text fields that should affect the scroll when focused
@@ -110,6 +123,90 @@ public class BookEditActivity extends Activity implements OnClickListener {
             findViewById(scrollFocusableFields.get(i)).setOnFocusChangeListener(listener);
         }
         */
+
+        maxpage = (TextView) findViewById(R.id.textView_maxPage);
+        nPages.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                maxpage.setText(String.format(getString(R.string.bookedit_maxpage),nPages.getText().toString()));
+            }
+        });
+
+        pb_readingstatus = (ProgressBar)findViewById(R.id.progressBar);
+        currentPage = (EditText) findViewById(R.id.editText_currentPage);
+        currentPage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (nPages.getText().toString().length() != 0) {
+                    pb_readingstatus.setMax(Integer.parseInt(nPages.getText().toString()));
+                    pb_readingstatus.setProgress(Integer.parseInt(currentPage.getText().toString()));
+                }
+            }
+        });
+
+        switch_read = (Switch) findViewById(R.id.switch_read);
+        switch_wantToRead = (Switch) findViewById(R.id.switch_wantToRead);
+        switch_currentlyReading = (Switch) findViewById(R.id.switch_currentlyReading);
+        layout_currentlyReadingBox = (ConstraintLayout) findViewById(R.id.layout_currentlyReadinBox);
+
+        //Button function, set false for not chosen ones
+        switch_read.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    switch_wantToRead.setChecked(false);
+                    switch_currentlyReading.setChecked(false);
+                    readingstatus = 3;
+                    layout_currentlyReadingBox.setVisibility(View.GONE);
+                }
+            }
+        });
+        switch_wantToRead.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    switch_read.setChecked(false);
+                    switch_currentlyReading.setChecked(false);
+                    readingstatus = 0;
+                    layout_currentlyReadingBox.setVisibility(View.GONE);
+                }
+            }
+        });
+        switch_currentlyReading.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    switch_read.setChecked(false);
+                    switch_wantToRead.setChecked(false);
+                    readingstatus = 2;
+                    layout_currentlyReadingBox.setVisibility(View.VISIBLE);
+                }
+                else{
+                    layout_currentlyReadingBox.setVisibility(View.GONE);
+                    readingstatus =-1;
+                }
+            }
+        });
 
         // if in add mode disable the delete option
         if(mode.trim().equalsIgnoreCase("add")){

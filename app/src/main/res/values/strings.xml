@@ -80,4 +80,7 @@
 
     <string name="bookinfo_descriptionclose">Schließen</string>
 
+    <!-- Chrissi -->
+    <string name="bookedit_maxpage">von %1$s</string>
+
 </resources>
