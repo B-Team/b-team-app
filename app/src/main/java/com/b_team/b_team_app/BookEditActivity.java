@@ -176,8 +176,11 @@ public class BookEditActivity extends Activity implements OnClickListener {
                 if (isChecked){
                     switch_wantToRead.setChecked(false);
                     switch_currentlyReading.setChecked(false);
-                    readingstatus = 3;
+                    readingstatus = 2;
                     layout_currentlyReadingBox.setVisibility(View.GONE);
+                }
+                else {
+                    readingstatus = -1;
                 }
             }
         });
@@ -190,6 +193,9 @@ public class BookEditActivity extends Activity implements OnClickListener {
                     readingstatus = 0;
                     layout_currentlyReadingBox.setVisibility(View.GONE);
                 }
+                else {
+                    readingstatus = -1;
+                }
             }
         });
         switch_currentlyReading.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -198,7 +204,7 @@ public class BookEditActivity extends Activity implements OnClickListener {
                 if (isChecked){
                     switch_read.setChecked(false);
                     switch_wantToRead.setChecked(false);
-                    readingstatus = 2;
+                    readingstatus = 1;
                     layout_currentlyReadingBox.setVisibility(View.VISIBLE);
                 }
                 else{
@@ -249,9 +255,44 @@ public class BookEditActivity extends Activity implements OnClickListener {
                 String mygenre = genre.getText().toString();
                 String myownership = ownership.getText().toString();
                 String myRating = rating.getText().toString();
+                String mycurrentpage = null;
+                String myreadingstatus = String.valueOf(readingstatus);
+
+                switch (readingstatus) {
+                    case 1:
+                         mycurrentpage = currentPage.getText().toString();
+                        break;
+                    case 0:
+                        mycurrentpage = String.valueOf(0);
+                        break;
+                    case 2:
+                        mycurrentpage = mynPages;
+                        break;
+                    case -1:
+                        curToastMessage.cancel();
+                        curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_readingstatus)), Toast.LENGTH_LONG);
+                        curToastMessage.show();
+                        return;
+
+                }
+
+
 
                 //TODO: Default values instead of toast
                 // check for blanks and invalid characters
+                if(mycurrentpage.trim().equalsIgnoreCase("")){
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_currentpage)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                }
+                else if (checkForInvalidChar(mycurrentpage)) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_currentpage)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                }
+
                 if(mytitle.trim().equalsIgnoreCase("")){
                     curToastMessage.cancel();
                     curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_title)), Toast.LENGTH_LONG);
@@ -373,6 +414,9 @@ public class BookEditActivity extends Activity implements OnClickListener {
                     values_book.put(BooksTable.KEY_NVOLUME, mynVolume);
                     values_book.put(BooksTable.KEY_OWNERSHIP, myownership);
                     values_book.put(BooksTable.KEY_RATING, myRating);
+                    values_book.put(BooksTable.KEY_READINGSTATUS, myreadingstatus );
+                    values_book.put(BooksTable.KEY_CURRENTPAGE, mycurrentpage);
+
 
                     getContentResolver().insert(BookProvider.URI_BOOKS, values_book);
                 }

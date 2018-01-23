@@ -1,6 +1,7 @@
 package com.b_team.b_team_app;
 
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
@@ -20,7 +21,7 @@ import android.widget.TextView;
 public class BookInfoActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     TextView tvBookTitle, tvAuthorName, tvPublisherName, tvNVolume, tvNMaxVolume, tvNPages, tvBookType, tvIsbn, tvGenreName, tvOwnershipStatus, tvNotes;
-    Button bOpenDescription;
+    Button bOpenDescription, progress;
     ImageView ivRatingStar1, ivRatingStar2, ivRatingStar3, ivRatingStar4, ivRatingStar5, ivBookCover;
     int rating;
     String description;
@@ -63,6 +64,7 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
                 dialog.show(getSupportFragmentManager(), "BookDescriptionFragment");
             }
         });
+
 
         ivBookCover = (ImageView) findViewById(R.id.imageView_bookCover);
         

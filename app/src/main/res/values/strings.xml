@@ -20,6 +20,8 @@
     <string name="key_genre">Genre</string>
     <string name="key_ownership">Besitzstatus</string>
     <string name="key_rating">Bewertung</string>
+    <string name="key_readingstatus">Lesestatus</string>
+    <string name="key_currentpage">Aktuelle Seite</string>
 
     <!-- Edit error messages -->
     <string name="editError_emptyRequiredField">Bitte %1$s angeben</string>
@@ -82,5 +84,6 @@
 
     <!-- Chrissi -->
     <string name="bookedit_maxpage">von %1$s</string>
+
 
 </resources>
