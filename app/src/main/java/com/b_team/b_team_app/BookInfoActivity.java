@@ -2,6 +2,7 @@ package com.b_team.b_team_app;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BookInfoActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -221,7 +223,42 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_share:
-                //TODO: Implement share functionality
+                Uri uri= Uri.withAppendedPath(BookProvider.URI_BOOKS,"/"+bookId);
+                String[] projection=new String[]{
+                        BooksTable.VIEWKEY_ID,
+                        BooksTable.VIEWKEY_TITLE,
+                        BooksTable.VIEWKEY_AUTHOR,
+                        BooksTable.VIEWKEY_GENRE,
+                        BooksTable.VIEWKEY_PUBLISHER,
+                        BooksTable.VIEWKEY_RATING,
+                        BooksTable.VIEWKEY_NPAGES,
+                        BooksTable.VIEWKEY_NVOLUME,
+                        BooksTable.VIEWKEY_ISBN
+                };
+                Cursor cursor = getContentResolver().query(uri,projection,null,null,null);
+                cursor.moveToFirst();
+                String title = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_TITLE));
+                String author = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_AUTHOR));
+                Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Buchempfehlung");
+                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_recommendation), title,author));
+                startActivity(Intent.createChooser(shareIntent, "Share via"));
+
+                // TODO: Include additional String samples
+
+                    // shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_bookinfo), title,author,genre,pages,volume,publisher));
+                    // shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_rating), title,author,rating));
+                    // shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_status), title,pages));
+                    // shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_advisor), title,pages, isbn));
+                        // String genre  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_GENRE));
+                        // String pages  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_NPAGES));
+                        // String volume = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_PUBLISHER));
+                        // String rating  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_RATING));
+                        // String isbn  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_ISBN));
+
+                //TODO: Create Dialog for choosing between Sharing Strings
+
                 return true;
             case R.id.action_edit:
                 //TODO: Open edit activity
