@@ -1,7 +1,9 @@
 package com.b_team.b_team_app;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -237,28 +239,74 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
                 };
                 Cursor cursor = getContentResolver().query(uri,projection,null,null,null);
                 cursor.moveToFirst();
-                String title = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_TITLE));
-                String author = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_AUTHOR));
-                Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-                shareIntent.setType("text/plain");
-                shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Buchempfehlung");
-                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_recommendation), title,author));
-                startActivity(Intent.createChooser(shareIntent, "Share via"));
+                final String title = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_TITLE));
+                final String author = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_AUTHOR));
+                final String genre  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_GENRE));
+                final String pages  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_NPAGES));
+                final String volume = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_NVOLUME));
+                double ratingdouble = Double.parseDouble(cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_RATING)))/2;
+                final String rating = String.valueOf(ratingdouble);
+                final String isbn  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_ISBN));
+                final String publisher = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_PUBLISHER));
 
-                // TODO: Include additional String samples
 
-                    // shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_bookinfo), title,author,genre,pages,volume,publisher));
-                    // shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_rating), title,author,rating));
-                    // shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_status), title,pages));
-                    // shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_advisor), title,pages, isbn));
-                        // String genre  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_GENRE));
-                        // String pages  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_NPAGES));
-                        // String volume = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_PUBLISHER));
-                        // String rating  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_RATING));
-                        // String isbn  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_ISBN));
 
-                //TODO: Create Dialog for choosing between Sharing Strings
 
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.sharing_dialog_title);
+                String[] items = new String[]{
+                        getString(R.string.dialogoption_recommendation),
+                        getString(R.string.dialogoption_bookinfo),
+                        getString(R.string.dialogoption_rating),
+                        getString(R.string.dialogoption_status),
+                        getString(R.string.dialogoption_advisor),
+                        getString(R.string.dialogoption_all)
+                };
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                        shareIntent.setType("text/plain");
+
+                        switch(i){
+                            case 0:
+                                shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.dialogoption_recommendation));
+                                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_recommendation), title,author));
+                                break;
+                            case 1:
+                                shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R. string.dialogoption_bookinfo));
+                                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_bookinfo), title,author,genre,pages,volume,publisher));
+                                break;
+                            case 2:
+                                shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.dialogoption_rating));
+                                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_rating), title,author,rating));
+                                break;
+                            case 3:
+                                shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.dialogoption_status));
+                                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_status), title,pages));
+                                break;
+                            case 4:
+                                shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.dialogoption_advisor));
+                                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_advisor), title,author,isbn));
+                                break;
+                            case 5:
+                                shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.dialogoption_recommendation));
+                                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_recommendation), title,author) + "\n" +
+                                        String.format(getString(R.string.sharing_bookinfo), title,author,genre,pages,volume,publisher) + "\n" +
+                                        String.format(getString(R.string.sharing_rating), title,author,rating) + "\n" +
+                                        String.format(getString(R.string.sharing_status), title,pages) + "\n" +
+                                        String.format(getString(R.string.sharing_advisor), title,author,isbn));
+                                break;
+                            default:
+                                return;
+                        }
+                        startActivity(Intent.createChooser(shareIntent, "Share via"));
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.create();
+                builder.show();
                 return true;
             case R.id.action_edit:
                 //TODO: Open edit activity
