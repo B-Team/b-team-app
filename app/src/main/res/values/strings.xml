@@ -9,6 +9,7 @@
     <string name="action_share">Share</string>
     <string name="action_add_book">Buch hinzufügen</string>
     <string name="action_edit">Bearbeiten</string>
+    <string name="action_open_statistics">Statistik öffnen</string>
 
     <!-- Database field names -->
     <string name="key_title">Titel</string>
@@ -79,5 +80,9 @@
     <string name="bookinfo_descriptionbutton">Beschreibung ausklappen</string>
 
     <string name="bookinfo_descriptionclose">Schließen</string>
+
+    <!-- Statistics -->
+    <string name="stat_graphlabel_genres">Genres in Biblothek</string>
+    <string name="stat_categorylabel_other">Andere</string>
 
 </resources>

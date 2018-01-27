@@ -1,6 +1,7 @@
 package com.b_team.b_team_app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -23,6 +24,7 @@ public class BookEditActivity extends Activity implements OnClickListener {
     private String id;
     private SimpleCursorAdapter dataAdapter;
     private Toast curToastMessage;
+    private String oldAuthor, oldPublisher, oldGenre;
 
     //Ignore this. Dynamic scrolling would be nice but it doesn't work right now and we don't have time for it
     //The ids of all the edit text fields that should affect the scroll when focused
@@ -130,11 +132,6 @@ public class BookEditActivity extends Activity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-    }
-
-    private boolean wasFocusMovementDown(View lastView, View currentView) {
-        if (lastView.getNextFocusDownId() == currentView.getId()) return true;
-        return false;
     }
 
     @Override
@@ -281,6 +278,9 @@ public class BookEditActivity extends Activity implements OnClickListener {
                 }
                 // update a record
                 else {
+                    if (myauthor != oldAuthor) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                    }
                     finish();
                 }
                 finish();
@@ -347,6 +347,10 @@ public class BookEditActivity extends Activity implements OnClickListener {
             genre.setText(myGenre);
             ownership.setText(myOwnership);
             rating.setText(myRating);
+
+            oldAuthor = myAuthor;
+            oldPublisher = myPublisher;
+            oldGenre = myGenre;
 
             cursor.close();
         }

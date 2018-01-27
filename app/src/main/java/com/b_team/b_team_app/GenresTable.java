@@ -18,6 +18,7 @@ public class GenresTable {
                     KEY_NAME + "," +
                     KEY_NBOOKS + ");";
 
+
     public static void onCreate(SQLiteDatabase db) {
         Log.w(LOG_TAG, DATABASE_CREATE);
         db.execSQL(DATABASE_CREATE);

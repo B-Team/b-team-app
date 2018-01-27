@@ -55,6 +55,10 @@ public class MainActivity extends AppCompatActivity{
                 bundle_add.putString("mode", "add");
                 bookEdit.putExtras(bundle_add);
                 startActivity(bookEdit);
+                return true;
+            case R.id.action_open_statistics:
+                Intent stats = new Intent(getBaseContext(), StatisticsActivity.class);
+                startActivity(stats);
             default:
                 //Action not recognized
                 //Let super handle it
