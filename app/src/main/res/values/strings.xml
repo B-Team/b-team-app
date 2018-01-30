@@ -85,4 +85,19 @@
     <string name="stat_graphlabel_genres">Genres in Biblothek</string>
     <string name="stat_categorylabel_other">Andere</string>
 
+    <!-- Share_function stuff -->
+    <string name ="sharing_recommendation">Kauf dir dieses Buch \"%1$s\" von %2$s.</string>
+    <string name ="sharing_bookinfo">Das Buch \"%1$s\" von %2$s gehört dem Genre %3$s an, besitzt %4$s Seiten. Es ist der %5$s. Band und wird von %6$s verlegt.</string>
+    <string name ="sharing_rating">Ich geb dem Buch \"%1$s\" von %2$s %3$s Sterne!</string>
+    <string name ="sharing_status">Ich bin bei dem Buch \"%1$s\" bereits auf Seite %2$s!</string>
+    <string name ="sharing_advisor">Hier hast du die ISBN zu dem Buch \"%1$s\" von %2$s : %3$s.</string>
+
+    <!-- Share_Dialog stuff -->
+    <string name="sharing_dialog_title">Was wollen Sie teilen?</string>
+    <string name="dialogoption_recommendation">Empfehlung</string>
+    <string name="dialogoption_bookinfo">Buchinformationen</string>
+    <string name="dialogoption_rating">Bewertung</string>
+    <string name="dialogoption_status">Mein Lesefortschritt</string>
+    <string name="dialogoption_advisor">ISBN</string>
+    <string name="dialogoption_all">ALLES!</string>
 </resources>
