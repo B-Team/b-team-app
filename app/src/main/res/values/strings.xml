@@ -24,9 +24,13 @@
     <string name="key_readingstatus">Lesestatus</string>
     <string name="key_currentpage">Aktuelle Seite</string>
 
+    <!-- Edit activity field hints -->
+    <string name="editFieldHint_rating">Von 0 bis 10</string>
+
     <!-- Edit error messages -->
     <string name="editError_emptyRequiredField">Bitte %1$s angeben</string>
     <string name="editError_invalidChar">Unerlaubtes Zeichen in %1$s</string>
+    <string name="editError_invalidAction_EditConnectedField">Das editieren des %1$ss wird derzeit nicht unterstützt!</string>
 
     <string name="book_details">Buch Details</string>
 
@@ -91,7 +95,7 @@
     <string name ="sharing_recommendation">Kauf dir dieses Buch \"%1$s\" von %2$s.</string>
     <string name ="sharing_bookinfo">Das Buch \"%1$s\" von %2$s gehört dem Genre %3$s an, besitzt %4$s Seiten. Es ist der %5$s. Band und wird von %6$s verlegt.</string>
     <string name ="sharing_rating">Ich geb dem Buch \"%1$s\" von %2$s %3$s Sterne!</string>
-    <string name ="sharing_status">Ich bin bei dem Buch \"%1$s\" bereits auf Seite %2$s!</string>
+    <string name ="sharing_status">Ich bin bei dem Buch \"%1$s\" bereits auf Seite %2$s von %3$s!</string>
     <string name ="sharing_advisor">Hier hast du die ISBN zu dem Buch \"%1$s\" von %2$s : %3$s.</string>
 
     <!-- Share_Dialog stuff -->
@@ -105,4 +109,8 @@
 
     <!-- Chrissi -->
     <string name="bookedit_maxpage">von %1$s</string>
+    <string name="bookedit_currentpage">Aktuelle Seite:</string>
+    <string name="bookedit_status_wantto">Möchte ich noch lesen</string>
+    <string name="bookedit_status_read">Schon gelesen</string>
+    <string name="bookedit_status_reading">Lese ich gerade</string>
 </resources>

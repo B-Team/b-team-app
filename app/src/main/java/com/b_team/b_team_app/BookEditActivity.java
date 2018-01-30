@@ -1,7 +1,6 @@
 package com.b_team.b_team_app;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -160,7 +159,9 @@ public class BookEditActivity extends Activity implements OnClickListener {
             public void afterTextChanged(Editable s) {
                 if (nPages.getText().toString().length() != 0) {
                     pb_readingstatus.setMax(Integer.parseInt(nPages.getText().toString()));
-                    pb_readingstatus.setProgress(Integer.parseInt(currentPage.getText().toString()));
+                    if (currentPage.getText().toString().length() != 0) {
+                        pb_readingstatus.setProgress(Integer.parseInt(currentPage.getText().toString()));
+                    }
                 }
             }
         });
@@ -218,6 +219,7 @@ public class BookEditActivity extends Activity implements OnClickListener {
         // if in add mode disable the delete option
         if(mode.trim().equalsIgnoreCase("add")){
             delete.setEnabled(false);
+            delete.setVisibility(View.GONE);
         }
         // get the rowId for the specific book
         else{
@@ -256,7 +258,7 @@ public class BookEditActivity extends Activity implements OnClickListener {
 
                 switch (readingstatus) {
                     case 1:
-                         mycurrentpage = currentPage.getText().toString();
+                        mycurrentpage = currentPage.getText().toString();
                         break;
                     case 0:
                         mycurrentpage = String.valueOf(0);
@@ -418,9 +420,36 @@ public class BookEditActivity extends Activity implements OnClickListener {
                 }
                 // update a record
                 else {
-                    if (myauthor != oldAuthor) {
-                        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                    if (!myauthor.equals(oldAuthor)) {
+                        curToastMessage.cancel();
+                        curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidAction_EditConnectedField), getString(R.string.key_author)), Toast.LENGTH_LONG);
+                        curToastMessage.show();
+                        return;
                     }
+                    if (!mypublisher.equals(oldPublisher)) {
+                        curToastMessage.cancel();
+                        curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidAction_EditConnectedField), getString(R.string.key_publisher)), Toast.LENGTH_LONG);
+                        curToastMessage.show();
+                        return;
+                    }
+                    if (!mygenre.equals(oldGenre)) {
+                        curToastMessage.cancel();
+                        curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidAction_EditConnectedField), getString(R.string.key_genre)), Toast.LENGTH_LONG);
+                        curToastMessage.show();
+                        return;
+                    }
+                    ContentValues values_book = new ContentValues();
+                    values_book.put(BooksTable.KEY_TITLE, mytitle);
+                    values_book.put(BooksTable.KEY_ISBN, myisbn);
+                    values_book.put(BooksTable.KEY_NPAGES, mynPages);
+                    values_book.put(BooksTable.KEY_NVOLUME, mynVolume);
+                    values_book.put(BooksTable.KEY_OWNERSHIP, myownership);
+                    values_book.put(BooksTable.KEY_RATING, myRating);
+                    values_book.put(BooksTable.KEY_READINGSTATUS, myreadingstatus );
+                    values_book.put(BooksTable.KEY_CURRENTPAGE, mycurrentpage);
+
+                    Uri uri = Uri.withAppendedPath(BookProvider.URI_BOOKS, "/" + id);
+                    getContentResolver().update(uri, values_book, null, null);
                     finish();
                 }
                 finish();
@@ -463,7 +492,10 @@ public class BookEditActivity extends Activity implements OnClickListener {
                 BooksTable.VIEWKEY_NVOLUME,
                 BooksTable.VIEWKEY_GENRE,
                 BooksTable.VIEWKEY_OWNERSHIP,
-                BooksTable.VIEWKEY_RATING};
+                BooksTable.VIEWKEY_RATING,
+                BooksTable.VIEWKEY_CURRENTPAGE,
+                BooksTable.VIEWKEY_READINGSTATUS
+        };
         Uri uri = Uri.withAppendedPath(BookProvider.URI_BOOKS, "/" + id);
         Cursor cursor = getContentResolver().query(uri, projection, null, null,
                 null);
@@ -491,6 +523,21 @@ public class BookEditActivity extends Activity implements OnClickListener {
             oldAuthor = myAuthor;
             oldPublisher = myPublisher;
             oldGenre = myGenre;
+
+            currentPage.setText(cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_CURRENTPAGE)));
+            readingstatus = cursor.getInt(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_READINGSTATUS));
+            switch (readingstatus) {
+                case 0:
+                    switch_wantToRead.setChecked(true);
+                    break;
+                case 1:
+                    switch_currentlyReading.setChecked(true);
+                    layout_currentlyReadingBox.setVisibility(View.VISIBLE);
+                    break;
+                case 2:
+                    switch_read.setChecked(true);
+                    break;
+            }
 
             cursor.close();
         }

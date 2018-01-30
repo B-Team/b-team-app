@@ -2,7 +2,6 @@ package com.b_team.b_team_app;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
-import android.app.ProgressDialog;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,7 +19,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class BookInfoActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -47,7 +45,6 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
 
         Bundle bundle = this.getIntent().getExtras();
         bookId = bundle.getInt("bookId");
-        //muss für PageCountAcivity!!!! muss kopieren
 
         tvBookTitle = (TextView) findViewById(R.id.textView_bookTitle);
         tvAuthorName = (TextView) findViewById(R.id.textView_authorName);
@@ -79,7 +76,17 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
         ivRatingStar4 = (ImageView) findViewById(R.id.imageView_ratingStar4);
         ivRatingStar5 = (ImageView) findViewById(R.id.imageView_ratingStar5);
 
-        getLoaderManager().initLoader(0, null, this);
+        if (getLoaderManager().getLoader(0) == null) {
+            getLoaderManager().initLoader(0, null, this);
+        } else {
+            getLoaderManager().restartLoader(0, null, this);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override
@@ -237,6 +244,7 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
                         BooksTable.VIEWKEY_PUBLISHER,
                         BooksTable.VIEWKEY_RATING,
                         BooksTable.VIEWKEY_NPAGES,
+                        BooksTable.VIEWKEY_CURRENTPAGE,
                         BooksTable.VIEWKEY_NVOLUME,
                         BooksTable.VIEWKEY_ISBN
                 };
@@ -246,6 +254,7 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
                 final String author = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_AUTHOR));
                 final String genre  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_GENRE));
                 final String pages  = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_NPAGES));
+                final String curPages = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_CURRENTPAGE));
                 final String volume = cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_NVOLUME));
                 double ratingdouble = Double.parseDouble(cursor.getString(cursor.getColumnIndexOrThrow(BooksTable.VIEWKEY_RATING)))/2;
                 final String rating = String.valueOf(ratingdouble);
@@ -287,7 +296,7 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
                                 break;
                             case 3:
                                 shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.dialogoption_status));
-                                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_status), title,pages));
+                                shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_status), title,curPages,pages));
                                 break;
                             case 4:
                                 shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.dialogoption_advisor));
@@ -298,7 +307,7 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
                                 shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, String.format(getString(R.string.sharing_recommendation), title,author) + "\n" +
                                         String.format(getString(R.string.sharing_bookinfo), title,author,genre,pages,volume,publisher) + "\n" +
                                         String.format(getString(R.string.sharing_rating), title,author,rating) + "\n" +
-                                        String.format(getString(R.string.sharing_status), title,pages) + "\n" +
+                                        String.format(getString(R.string.sharing_status), title,curPages,pages) + "\n" +
                                         String.format(getString(R.string.sharing_advisor), title,author,isbn));
                                 break;
                             default:
@@ -312,7 +321,12 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
                 builder.show();
                 return true;
             case R.id.action_edit:
-                //TODO: Open edit activity
+                Intent bookEdit = new Intent(getBaseContext(), BookEditActivity.class);
+                Bundle bundle_edit = new Bundle();
+                bundle_edit.putString("mode", "edit");
+                bundle_edit.putString("rowId", String.valueOf(bookId));
+                bookEdit.putExtras(bundle_edit);
+                startActivity(bookEdit);
                 return true;
             default:
                 //Action not recognized

@@ -48,13 +48,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         dataAdapter = new SimpleCursorAdapter(this, R.layout.active_book_item, null, columns, to, 0);
         resultList.setAdapter(dataAdapter);
 
-        getLoaderManager().initLoader(0, null, this);
+        if (getLoaderManager().getLoader(0) == null) {
+            getLoaderManager().initLoader(0, null, this);
+        } else {
+            getLoaderManager().restartLoader(0, null, this);
+        }
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override

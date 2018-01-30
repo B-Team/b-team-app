@@ -3,22 +3,26 @@ package com.b_team.b_team_app;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class PageCountEdit extends AppCompatActivity implements View.OnClickListener {
+public class PageCountEdit extends AppCompatActivity implements OnClickListener {
 
     private int bookId;
     private TextView textViewMaxPageCount;
     private EditText editTextCurrentPageCount;
     private String maxPageCount, currentPageCount;
     private ProgressBar pb_readingstatus;
+    private Button buttonSave, buttonCancel;
 
 
 
@@ -38,6 +42,11 @@ public class PageCountEdit extends AppCompatActivity implements View.OnClickList
 
         Bundle bundle = this.getIntent().getExtras();
         bookId = bundle.getInt("bookId");
+
+        buttonSave = (Button) findViewById(R.id.buttonSave);
+        buttonSave.setOnClickListener(this);
+        buttonCancel = (Button) findViewById(R.id.buttonCancel);
+        buttonCancel.setOnClickListener(this);
 
         textViewMaxPageCount = (TextView) findViewById(R.id.textViewMaxPageCount);
         editTextCurrentPageCount = (EditText) findViewById(R.id.editTextCurrentPagecount);
@@ -61,6 +70,26 @@ public class PageCountEdit extends AppCompatActivity implements View.OnClickList
         pb_readingstatus.setProgress(Integer.parseInt(editTextCurrentPageCount.getText().toString()));
         pb_readingstatus.setMax(Integer.parseInt(textViewMaxPageCount.getText().toString()));
 
+        editTextCurrentPageCount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (editTextCurrentPageCount.getText().toString().length() != 0 && pb_readingstatus != null) {
+                    pb_readingstatus.setMax(Integer.parseInt(textViewMaxPageCount.getText().toString()));
+                    pb_readingstatus.setProgress(Integer.parseInt(editTextCurrentPageCount.getText().toString()));
+                }
+            }
+        });
+
     }
 
     @Override
@@ -70,7 +99,8 @@ public class PageCountEdit extends AppCompatActivity implements View.OnClickList
             case R.id.buttonSave:
                 ContentValues values_book = new ContentValues();
                 values_book.put(BooksTable.KEY_CURRENTPAGE,Integer.parseInt(editTextCurrentPageCount.getText().toString()));
-                getContentResolver().update(BookProvider.URI_BOOKS, values_book, null, null);
+                Uri uri = Uri.withAppendedPath(BookProvider.URI_BOOKS, "/" + bookId);
+                getContentResolver().update(uri, values_book, null, null);
                 finish();
                 break;
             case R.id.buttonCancel:

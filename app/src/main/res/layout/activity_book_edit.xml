@@ -208,7 +208,7 @@
                 android:layout_alignLeft="@id/editText_title"
                 android:layout_below="@+id/editText_ownership"
                 android:layout_toRightOf="@+id/textView_rating"
-                android:hint="Auf einer Skalar von 1 bis 10"
+                android:hint="@string/editFieldHint_rating"
                 android:inputType="number"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -224,6 +224,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="15dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -233,7 +234,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:text="Möchte ich noch lesen:"
+                android:text="@string/bookedit_status_wantto"
                 android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
                 app:layout_constraintEnd_toStartOf="@+id/switch_wantToRead"
                 app:layout_constraintStart_toStartOf="parent"
@@ -244,6 +245,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textView_wantToRead" />
 
@@ -253,7 +255,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:text="Schon gelesen:"
+                android:text="@string/bookedit_status_read"
                 android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
                 app:layout_constraintEnd_toStartOf="@+id/switch_read"
                 app:layout_constraintStart_toStartOf="parent"
@@ -264,6 +266,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView_read" />
 
@@ -272,7 +275,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="Lese ich gerade:"
+                android:layout_marginLeft="8dp"
+                android:text="@string/bookedit_status_reading"
                 android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
                 app:layout_constraintEnd_toStartOf="@+id/switch_currentlyReading"
                 app:layout_constraintStart_toStartOf="parent"
@@ -291,7 +295,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="Aktuelle Seite:"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/bookedit_currentpage"
                     android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -301,6 +306,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:inputType="number"
                     app:layout_constraintEnd_toStartOf="@id/textView_maxPage"
                     app:layout_constraintStart_toEndOf="@id/textView_currentPage"
                     app:layout_constraintTop_toTopOf="parent" />
