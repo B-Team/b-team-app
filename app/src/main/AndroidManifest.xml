@@ -39,6 +39,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".StatisticsActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".PageCountEdit" android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
