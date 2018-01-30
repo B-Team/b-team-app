@@ -43,6 +43,7 @@ public class BookInfoActivity extends AppCompatActivity implements LoaderManager
 
         Bundle bundle = this.getIntent().getExtras();
         bookId = bundle.getInt("bookId");
+        //muss für PageCountAcivity!!!! muss kopieren
 
         tvBookTitle = (TextView) findViewById(R.id.textView_bookTitle);
         tvAuthorName = (TextView) findViewById(R.id.textView_authorName);

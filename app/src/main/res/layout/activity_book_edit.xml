@@ -208,6 +208,7 @@
                 android:layout_alignLeft="@id/editText_title"
                 android:layout_below="@+id/editText_ownership"
                 android:layout_toRightOf="@+id/textView_rating"
+                android:hint="Auf einer Skalar von 1 bis 10"
                 android:inputType="number"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
