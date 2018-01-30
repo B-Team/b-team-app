@@ -25,6 +25,8 @@ public class BooksTable {
     public static final String KEY_PRICE = "price";
     public static final String KEY_OWNERSHIP = "ownership";
     public static final String KEY_LASTEDIT = "lastEdit";
+    public static final String KEY_READINGSTATUS = "readingStatus";
+    public static final String KEY_CURRENTPAGE = "currentpage";
 
     public static final String VIEWKEY_ID = KEY_ID;
     public static final String VIEWKEY_TITLE = KEY_TITLE;
@@ -42,6 +44,8 @@ public class BooksTable {
     public static final String VIEWKEY_PRICE = KEY_PRICE;
     public static final String VIEWKEY_OWNERSHIP = KEY_OWNERSHIP;
     public static final String VIEWKEY_LASTEDIT = KEY_LASTEDIT;
+    public static final String VIEWKEY_READINGSTATUS = KEY_READINGSTATUS;
+    public static final String VIEWKEY_CURRENTPAGE = KEY_CURRENTPAGE;
 
     private static final String LOG_TAG = "BooksTable";
     public static final String TABLE_NAME = "books";
@@ -64,7 +68,9 @@ public class BooksTable {
                     TABLE_NAME + "." + KEY_RATING + " AS " + VIEWKEY_RATING + "," +
                     TABLE_NAME + "." + KEY_PRICE + " AS " + VIEWKEY_PRICE + "," +
                     TABLE_NAME + "." + KEY_OWNERSHIP + " AS " + VIEWKEY_OWNERSHIP + "," +
-                    TABLE_NAME + "." + KEY_LASTEDIT + " AS " + VIEWKEY_LASTEDIT +
+                    TABLE_NAME + "." + KEY_LASTEDIT + " AS " + VIEWKEY_LASTEDIT + "," +
+                    TABLE_NAME + "." + KEY_READINGSTATUS + " AS " + VIEWKEY_READINGSTATUS + "," +
+                    TABLE_NAME + "." + KEY_CURRENTPAGE + " AS " + VIEWKEY_CURRENTPAGE +
                     " FROM " + TABLE_NAME +
                     " INNER JOIN " + BooksAuthorsTable.TABLE_NAME + " ON " + TABLE_NAME + "." + KEY_ID + " = " + BooksAuthorsTable.TABLE_NAME + "." + BooksAuthorsTable.KEY_BOOK_ID +
                     " INNER JOIN " + AuthorsTable.TABLE_NAME + " ON " + BooksAuthorsTable.TABLE_NAME + "." + BooksAuthorsTable.KEY_AUTHOR_ID + " = " + AuthorsTable.TABLE_NAME + "." + AuthorsTable.KEY_ID +
@@ -89,6 +95,8 @@ public class BooksTable {
                     KEY_RATING + "," +
                     KEY_PRICE + "," +
                     KEY_OWNERSHIP + "," +
+                    KEY_READINGSTATUS + "," +
+                    KEY_CURRENTPAGE + "," +
                     KEY_LASTEDIT + ");";
 
     /**

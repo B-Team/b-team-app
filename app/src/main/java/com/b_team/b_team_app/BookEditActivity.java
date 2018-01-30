@@ -6,11 +6,18 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.regex.Matcher;
@@ -19,12 +26,17 @@ import java.util.regex.Pattern;
 public class BookEditActivity extends Activity implements OnClickListener {
 
     private Button save, delete, cancel;
+    private Switch switch_read, switch_currentlyReading, switch_wantToRead;
     private String mode;
-    private EditText title, author, isbn, publisher, nPages, nVolume, genre, ownership, rating;
+    private EditText title, author, isbn, publisher, nPages, nVolume, genre, ownership, rating, currentPage;
     private String id;
+    private TextView maxpage;
     private SimpleCursorAdapter dataAdapter;
+    private int readingstatus = -1;
     private Toast curToastMessage;
     private String oldAuthor, oldPublisher, oldGenre;
+    private ConstraintLayout layout_currentlyReadingBox;
+    private ProgressBar pb_readingstatus;
 
     //Ignore this. Dynamic scrolling would be nice but it doesn't work right now and we don't have time for it
     //The ids of all the edit text fields that should affect the scroll when focused
@@ -113,6 +125,96 @@ public class BookEditActivity extends Activity implements OnClickListener {
         }
         */
 
+        maxpage = (TextView) findViewById(R.id.textView_maxPage);
+        nPages.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                maxpage.setText(String.format(getString(R.string.bookedit_maxpage),nPages.getText().toString()));
+            }
+        });
+
+        pb_readingstatus = (ProgressBar)findViewById(R.id.progressBar);
+        currentPage = (EditText) findViewById(R.id.editText_currentPage);
+        currentPage.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (nPages.getText().toString().length() != 0) {
+                    pb_readingstatus.setMax(Integer.parseInt(nPages.getText().toString()));
+                    pb_readingstatus.setProgress(Integer.parseInt(currentPage.getText().toString()));
+                }
+            }
+        });
+
+        switch_read = (Switch) findViewById(R.id.switch_read);
+        switch_wantToRead = (Switch) findViewById(R.id.switch_wantToRead);
+        switch_currentlyReading = (Switch) findViewById(R.id.switch_currentlyReading);
+        layout_currentlyReadingBox = (ConstraintLayout) findViewById(R.id.layout_currentlyReadinBox);
+
+        //Button function, set false for not chosen ones
+        switch_read.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    switch_wantToRead.setChecked(false);
+                    switch_currentlyReading.setChecked(false);
+                    readingstatus = 2;
+                    layout_currentlyReadingBox.setVisibility(View.GONE);
+                }
+                else {
+                    readingstatus = -1;
+                }
+            }
+        });
+        switch_wantToRead.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    switch_read.setChecked(false);
+                    switch_currentlyReading.setChecked(false);
+                    readingstatus = 0;
+                    layout_currentlyReadingBox.setVisibility(View.GONE);
+                }
+                else {
+                    readingstatus = -1;
+                }
+            }
+        });
+        switch_currentlyReading.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    switch_read.setChecked(false);
+                    switch_wantToRead.setChecked(false);
+                    readingstatus = 1;
+                    layout_currentlyReadingBox.setVisibility(View.VISIBLE);
+                }
+                else{
+                    layout_currentlyReadingBox.setVisibility(View.GONE);
+                    readingstatus =-1;
+                }
+            }
+        });
+
         // if in add mode disable the delete option
         if(mode.trim().equalsIgnoreCase("add")){
             delete.setEnabled(false);
@@ -149,9 +251,44 @@ public class BookEditActivity extends Activity implements OnClickListener {
                 String mygenre = genre.getText().toString();
                 String myownership = ownership.getText().toString();
                 String myRating = rating.getText().toString();
+                String mycurrentpage = null;
+                String myreadingstatus = String.valueOf(readingstatus);
+
+                switch (readingstatus) {
+                    case 1:
+                         mycurrentpage = currentPage.getText().toString();
+                        break;
+                    case 0:
+                        mycurrentpage = String.valueOf(0);
+                        break;
+                    case 2:
+                        mycurrentpage = mynPages;
+                        break;
+                    case -1:
+                        curToastMessage.cancel();
+                        curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_readingstatus)), Toast.LENGTH_LONG);
+                        curToastMessage.show();
+                        return;
+
+                }
+
+
 
                 //TODO: Default values instead of toast
                 // check for blanks and invalid characters
+                if(mycurrentpage.trim().equalsIgnoreCase("")){
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_currentpage)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                }
+                else if (checkForInvalidChar(mycurrentpage)) {
+                    curToastMessage.cancel();
+                    curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_invalidChar), getString(R.string.key_currentpage)), Toast.LENGTH_LONG);
+                    curToastMessage.show();
+                    return;
+                }
+
                 if(mytitle.trim().equalsIgnoreCase("")){
                     curToastMessage.cancel();
                     curToastMessage = Toast.makeText(getBaseContext(), String.format(getString(R.string.editError_emptyRequiredField), getString(R.string.key_title)), Toast.LENGTH_LONG);
@@ -273,6 +410,9 @@ public class BookEditActivity extends Activity implements OnClickListener {
                     values_book.put(BooksTable.KEY_NVOLUME, mynVolume);
                     values_book.put(BooksTable.KEY_OWNERSHIP, myownership);
                     values_book.put(BooksTable.KEY_RATING, myRating);
+                    values_book.put(BooksTable.KEY_READINGSTATUS, myreadingstatus );
+                    values_book.put(BooksTable.KEY_CURRENTPAGE, mycurrentpage);
+
 
                     getContentResolver().insert(BookProvider.URI_BOOKS, values_book);
                 }
