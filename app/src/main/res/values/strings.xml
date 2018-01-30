@@ -1,0 +1,88 @@
+<resources>
+    <string name="app_name">B-Team-App</string>
+
+    <!-- Action descriptions -->
+    <string name="action_settings">Settings</string>
+    <string name="action_search">Suche</string>
+    <string name="action_up">Zurück</string>
+    <string name="action_clear_search">Suche löschen</string>
+    <string name="action_share">Share</string>
+    <string name="action_add_book">Buch hinzufügen</string>
+    <string name="action_edit">Bearbeiten</string>
+    <string name="action_open_statistics">Statistik öffnen</string>
+
+    <!-- Database field names -->
+    <string name="key_title">Titel</string>
+    <string name="key_author">Autor</string>
+    <string name="key_isbn">ISBN</string>
+    <string name="key_publisher">Verlag</string>
+    <string name="key_nPages">Seitenanzahl</string>
+    <string name="key_nVolume">Band</string>
+    <string name="key_genre">Genre</string>
+    <string name="key_ownership">Besitzstatus</string>
+    <string name="key_rating">Bewertung</string>
+
+    <!-- Edit error messages -->
+    <string name="editError_emptyRequiredField">Bitte %1$s angeben</string>
+    <string name="editError_invalidChar">Unerlaubtes Zeichen in %1$s</string>
+
+    <string name="book_details">Buch Details</string>
+
+    <string name="cab_delete">Einträge löschen</string>
+    <string name="cab_change">Eintrag ändern</string>
+    <string name="cab_checked_string">ausgewählt</string>
+
+    <!-- Button texts-->
+    <string name="button_delete">Löschen</string>
+    <string name="button_save">Speichern</string>
+    <string name="button_cancel">Abbrechen</string>
+
+    <!-- Search -->
+    <string name="search_hint_nocontext">Suche&#8230;</string>
+    <string name="search_hint_context_start">Suche in </string>
+    <string name="search_hint_context_end">&#8230;</string>
+
+    <!-- Search result category headers -->
+    <string name="search_category_header_titles">Titel</string>
+    <string name="search_category_header_authors">Autoren</string>
+    <string name="search_category_header_publishers">Verlage</string>
+    <string name="search_category_header_genres">Genres</string>
+    <string name="search_category_header_wishlist">Wunschliste</string>
+    <string name="search_category_header_ratings">Bewertungen</string>
+
+    <!-- Search count messages -->
+    <string name="search_count_messages_titles">Titel gespeichert</string>
+    <string name="search_count_messages_authors">Autoren gespeichert</string>
+    <string name="search_count_messages_publishers">Verlage gespeichert</string>
+    <string name="search_count_messages_genres">Genres gespeichert</string>
+    <string name="search_count_messages_wishlist">Wünsche notiert</string>
+    <string name="search_count_messages_ratings">Bücher bewertet</string>
+
+    <!-- Image descriptions -->
+    <string name="image_desc_icon_book">Icon Buch</string>
+    <string name="image_desc_book_cover">Buchcover</string>
+
+    <!-- Misc -->
+    <string name="status_message_loading">Lädt&#8230;</string>
+
+    <!-- Book Info -->
+    <string name="bookinfo_isbnlabel">ISBN:</string>
+    <string name="bookinfo_genrelabel">Genre:</string>
+    <string name="bookinfo_ratinglabel">Persöhnliche Bewertung:</string>
+    <string name="bookinfo_noteslabel">Anmerkungen:</string>
+    <string name="bookinfo_pageslabel">Seiten</string>
+    <string name="bookinfo_volumelabel">Band:</string>
+    <string name="bookinfo_descriptionlabel">Beschreibung</string>
+    <string name="bookinfo_authorconjunction">von</string>
+    <string name="bookinfo_volumeconjunction">von</string>
+    <string name="bookinfo_publisherconjunction">Verlegt von:</string>
+
+    <string name="bookinfo_descriptionbutton">Beschreibung ausklappen</string>
+
+    <string name="bookinfo_descriptionclose">Schließen</string>
+
+    <!-- Statistics -->
+    <string name="stat_graphlabel_genres">Genres in Biblothek</string>
+    <string name="stat_categorylabel_other">Andere</string>
+
+</resources>
